@@ -1,6 +1,4 @@
 #include "bipartitegraph.h"
 
-BipartiteGraph::BipartiteGraph()
-{
-
+template <class Type> BipartiteGraph<Type>::BipartiteGraph(){
 }
