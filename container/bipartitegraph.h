@@ -17,7 +17,7 @@ public:
         data = d;
         check = c;
     }
-    Type getData() {
+    Type getData() const {
         return data;
     }
     void setData(Type d) {
@@ -35,6 +35,16 @@ public:
         out << dt.getData();
         return out;
     }
+    bool operator==(const Node<Type>& other)
+    {
+        return this->data ==
+                other.getData();
+    }
+    bool operator!=(const Node<Type>& other)
+    {
+        return !(*this ==
+                 other);
+    }
 };
 
 /* Шаблон ребра графа(пара вершин) */
@@ -44,11 +54,11 @@ private:
     Node<Type> *second; // вторая вершина ребра
 public:
     PairNode() {}
-    PairNode(Node<Type> f,Node<Type> s) {
-        first = &f;
-        second = &s;
+    PairNode(Node<Type> *f,Node<Type> *s) {
+        first = f;
+        second = s;
     }
-    Node<Type> getFisrt(){
+    Node<Type> getFisrt() const {
         return *first;
     }
     void setFisrt(Node<Type> f){
@@ -60,6 +70,20 @@ public:
     void setSecond(Node<Type> s){
         second = s;
     }
+    friend std::ostream& operator<<(std::ostream& out, PairNode<Type> dt)
+    {
+        out << "(" << dt.getFisrt() << "," << dt.getSecond() << ")";
+        return out;
+    }
+    bool operator==(const PairNode<Type>& other)
+    {
+        Node<Type> f = other.getFisrt();
+        return first->getData() == f.getData();
+    }
+    bool operator!=(const PairNode<Type>& other)
+    {
+        return this->first != other.getFisrt();
+    }
 };
 
 /* Шаблон Двудольного графа */
@@ -70,8 +94,10 @@ private:
     std::list<PairNode<Type>> pairs;    // список ребер графа
 public:
     BipartiteGraph() {}
+    /* Операции с вершинами */
     void addVertix(Type n){
-        vertixs.push_front(new Node<Type>(n));
+        Node<Type> temp(n);
+        vertixs.push_back(temp);
     }
     void addVertix(Type n, bool c){
         Node<Type> temp(n,c);
@@ -83,11 +109,31 @@ public:
     void popBackVertix() {
         vertixs.pop_back();
     }
+    Node<Type>& getVertixNode(int n){
+        IteratorVertixs v = beginVertixs();
+        for(int i = 0; i < n;i++){
+            ++v;
+        }
+        return *v;
+    }
+    void removeVertixNode(int n){
+        IteratorVertixs v = beginVertixs();
+        for(int i = 0; i < n;i++){
+            ++v;
+        }
+        int find = findPairNode(*v);
+        while (find != -1) {
+            removePairNode(find);
+            find = findPairNode(*v);
+        }
+        vertixs.erase(v.getCurrent());
+    }
 
-    /* Итератор для списка вершин */
+    // Итератор для списка вершин
     class IteratorVertixs {
         typename std::list<Node<Type>>::iterator current = NULL;
     public:
+        typename std::list<Node<Type>>::iterator getCurrent() {return current;}
         IteratorVertixs(typename std::list<Node<Type>>::iterator current):current(current){}
         IteratorVertixs& operator=(const IteratorVertixs& other)
         {
@@ -126,12 +172,13 @@ public:
 
         Node<Type>* operator->()
         {
-            else return current;
+            else current;
         }
 
         bool isEmpty() {
             return current == NULL;
         }
+
     };
     IteratorVertixs beginVertixs() {
         return IteratorVertixs(vertixs.begin());
@@ -139,6 +186,102 @@ public:
     IteratorVertixs endVertixs() {
         return IteratorVertixs(vertixs.end());
     }
+
+    /* Операции с ребрами */
+    void addPair(Node<Type> *f, Node<Type> *s){
+        PairNode<Type> temp(f,s);
+        pairs.push_back(temp);
+    }
+    void popFrontPair() {
+        pairs.pop_front();
+    }
+    void popBackPair() {
+        pairs.pop_back();
+    }
+    PairNode<Type>& getPairNode(int n){
+        IteratorPairs v = beginPairs();
+        for(int i = 0; i < n;i++){
+            ++v;
+        }
+        return *v;
+    }
+    int findPairNode(Node<Type> t){
+        int result = -1, i = 0;
+        for(IteratorPairs v = beginPairs(); v != endPairs();++v){
+            PairNode<Type> pairNode = *v;
+            if (pairNode.getFisrt() == t || pairNode.getSecond() == t) {
+                result = i;
+                break;
+            }
+            i++;
+        }
+        return result;
+    }
+    void removePairNode(int n){
+        IteratorPairs v = beginPairs();
+        for(int i = 0; i < n;i++){
+            ++v;
+        }
+        pairs.erase(v.getCurrent());
+    }
+
+    /* Итератор для списка вершин */
+    class IteratorPairs {
+        typename std::list<PairNode<Type>>::iterator current = NULL;
+    public:
+        typename std::list<PairNode<Type>>::iterator getCurrent() {return current;}
+        IteratorPairs(typename std::list<PairNode<Type>>::iterator current):current(current){}
+        IteratorPairs& operator=(const IteratorPairs& other)
+        {
+            if (this != &other)
+            {
+                current = other.current;
+            }
+            return *this;
+        }
+
+        IteratorPairs& operator++()
+        {
+            current++;
+            return *this;
+        }
+
+        IteratorPairs& operator--()
+        {
+            current--;
+            return *this;
+        }
+
+        bool operator==(const IteratorPairs& other)
+        {
+            return this->current.operator ==(other.current);
+        }
+
+        bool operator!=(const IteratorPairs& other)
+        {
+            return this->current.operator !=(other.current);
+        }
+
+        PairNode<Type>& operator*(){
+            return *current;
+        }
+
+        PairNode<Type>* operator->()
+        {
+            else return current;
+        }
+
+        bool isEmpty() {
+            return current == NULL;
+        }
+    };
+    IteratorPairs beginPairs() {
+        return IteratorPairs(pairs.begin());
+    }
+    IteratorPairs endPairs() {
+        return IteratorPairs(pairs.end());
+    }
+
 };
 
 #endif // BIPARTITEGRAPH_H
