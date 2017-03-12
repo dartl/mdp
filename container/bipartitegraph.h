@@ -42,8 +42,8 @@ public:
     }
     bool operator!=(const Node<Type>& other)
     {
-        return !(*this ==
-                 other);
+        return !(this->data ==
+                 other.getData());
     }
 };
 
@@ -109,12 +109,29 @@ public:
     void popBackVertix() {
         vertixs.pop_back();
     }
-    Node<Type>& getVertixNode(int n){
+    Node<Type>& getVertixNodeByNumber(int n){
         IteratorVertixs v = beginVertixs();
         for(int i = 0; i < n;i++){
             ++v;
         }
         return *v;
+    }
+    Node<Type>& getVertixNode(Type d){
+        bool check = false;
+        IteratorVertixs v = beginVertixs();
+        for(; v != endVertixs(); ++v){
+            Node<Type> node = *v;
+            if (node.getData() == d) {
+                check = true;
+                break;
+            }
+        }
+        if (check) {
+            return *v;
+        } else {
+            // нужно заменить исключением
+            return Node<Type>();
+        }
     }
     void removeVertixNode(int n){
         IteratorVertixs v = beginVertixs();
