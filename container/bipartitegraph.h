@@ -167,7 +167,19 @@ public:
             return *this;
         }
 
+        IteratorVertixs operator++(int)
+        {
+            current++;
+            return *this;
+        }
+
         IteratorVertixs& operator--()
+        {
+            current--;
+            return *this;
+        }
+
+        IteratorVertixs operator--(int)
         {
             current--;
             return *this;
@@ -263,7 +275,19 @@ public:
             return *this;
         }
 
+        IteratorPairs operator++(int)
+        {
+            current++;
+            return *this;
+        }
+
         IteratorPairs& operator--()
+        {
+            current--;
+            return *this;
+        }
+
+        IteratorPairs& operator--(int)
         {
             current--;
             return *this;
