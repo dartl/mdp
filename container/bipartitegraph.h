@@ -3,11 +3,6 @@
 #include <list>
 #include <iostream>
 
-#include <cassert>
-#include <memory>
-#include <vector>
-#include <deque>
-
 /* Шаблон вершины графа */
 template <class Type> class Node{
 private:
