@@ -3,6 +3,11 @@
 #include <list>
 #include <iostream>
 
+#include <cassert>
+#include <memory>
+#include <vector>
+#include <deque>
+
 /* Шаблон вершины графа */
 template <class Type> class Node{
 private:
@@ -116,6 +121,17 @@ public:
         }
         return *v;
     }
+    bool checkVertix(Node<Type> vertix) {
+        IteratorVertixs v = beginVertixs();
+        for(; v != endVertixs(); ++v){
+            Node<Type> temp = *v.getCurrent();
+            if (temp == vertix) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     Node<Type>& getVertixNode(Type d){
         bool check = false;
         IteratorVertixs v = beginVertixs();
