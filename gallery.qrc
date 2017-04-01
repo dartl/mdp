@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/icon-back.png</file>
+        <file>images/icon-settings.png</file>
+        <file>fonts/LICENSE.txt</file>
+        <file>fonts/OpenSans-Regular.ttf</file>
+        <file>images/icon-search-spec.png</file>
+        <file>images/icon-menu.png</file>
+        <file>images/icon-open-menu.png</file>
+        <file>images/icon-create-menu.png</file>
+        <file>images/icon-save-menu.png</file>
+        <file>images/icon-exit-menu.png</file>
+        <file>images/icon-addNode-addArea.png</file>
+    </qresource>
+</RCC>

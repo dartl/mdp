@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>AdditionArea.qml</file>
+        <file>ControlViewToolBar.qml</file>
+        <file>BlackButtonBackground.qml</file>
+        <file>BlackButtonStyle.qml</file>
+        <file>NavigationDrawer.qml</file>
+    </qresource>
+</RCC>
