@@ -27,19 +27,16 @@ class Algorithm
     std::vector<JobType> jobs;
     std::vector<WorkerType> workers;
 
-
 public:
     Algorithm();
     ~Algorithm();
 
-    void setGraph(BipartiteGraph<int>* graph)  { this->graph = graph;}
-    BipartiteGraph<int>* getGraph(){ return this->graph; }
-
     void PrintVertixs();
 
-
-    void addLeftNodeGraph(BipartiteGraph<int>* graph, std::vector<JobType> vec, int id);
+    void addLeftNodeGraph(std::vector<JobType> vec, int id);
     std::vector<JobType> getJobs() const;
+    std::vector<WorkerType> getWorkers() const;
+    BipartiteGraph<int> *getGraph() const;
 };
 
 #endif // ALGORITHM_H

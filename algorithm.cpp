@@ -5,6 +5,16 @@ std::vector<JobType> Algorithm::getJobs() const
     return jobs;
 }
 
+std::vector<WorkerType> Algorithm::getWorkers() const
+{
+    return workers;
+}
+
+BipartiteGraph<int> *Algorithm::getGraph() const
+{
+    return graph;
+}
+
 Algorithm::Algorithm()
 {
     workers.resize(6);
@@ -65,7 +75,7 @@ void Algorithm::PrintVertixs()
     }
 }
 
-void Algorithm::addLeftNodeGraph(BipartiteGraph<int> *graph, std::vector<JobType> vec, int id)
+void Algorithm::addLeftNodeGraph(std::vector<JobType> vec, int id)
 {
 
     for (int i = 0; i < vec.size(); i++)
@@ -75,3 +85,4 @@ void Algorithm::addLeftNodeGraph(BipartiteGraph<int> *graph, std::vector<JobType
             break;
         }
 }
+
