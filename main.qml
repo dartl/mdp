@@ -15,6 +15,9 @@ Window {
 
     property color  fontColor: "#222"
     property color darkFontColor: "#e7e7e7"
+    //property for graph
+    //property ListModel model_graph: null
+
 
     // Пересчёт независимых от плотности пикселей в физические пиксели устройства
     readonly property int dpi: Screen.pixelDensity * 25.4
@@ -61,6 +64,7 @@ Window {
                 ListView {
                     interactive: false
                     anchors.fill: parent
+
                     //Модель данных для списка меню
                     model: ListModel {
                         ListElement {title: "Создать"; icon: "qrc:/images/icon-create-menu.png"}
@@ -69,7 +73,6 @@ Window {
                         ListElement {title: "Сохранить как"; icon: "qrc:/images/icon-save-menu.png"}
                         ListElement {title: "Выход"; icon: "qrc:/images/icon-exit-menu.png"}
                     }
-
                     delegate: Button {
                         width: nav.width
                         height: mainWindow.height * 0.125
@@ -80,6 +83,42 @@ Window {
 
                         onClicked: {
                             usedMenu(index)
+                        }
+                    }
+                }
+            }
+        }
+
+        NavigationDrawer {
+            id: showJobs
+            //bug№3
+            _rootItem: addArea
+            anchors.top: toolBar.bottom
+            _openMarginSize: 0
+            position: Qt.RightEdge
+            //////
+            Rectangle {
+                anchors.fill: parent
+
+                color: "#99958c"
+
+                ListView {
+                    interactive: false
+                    anchors.fill: parent
+
+                    model: db_model_jobs
+
+                    delegate: Button {
+                        width: nav.width
+                        height: mainWindow.height * 0.125
+
+                        text: title
+                        style: BlackButtonStyle {
+                        }
+
+                        onClicked: {
+                            console.log(db_model_jobs.getId(id))
+                            //db_model_jobs.getId(id)
                         }
                     }
                 }

@@ -29,7 +29,10 @@ BlackButtonBackground {
         anchors.bottom: parent.bottom
         iconSource: "qrc:/images/icon-menu.png"
         //onClicked: stackView.pop()
-        onClicked: nav.toggle()
+        onClicked: {
+            nav.toggle();
+            showJobs.hide()
+        }
         style: BlackButtonStyle {
         }
     }

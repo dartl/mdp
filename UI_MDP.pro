@@ -1,10 +1,11 @@
 TEMPLATE = app
 
-QT += qml quick
+QT += qml quick sql
 CONFIG += c++11
 
 SOURCES += main.cpp \
-    handlersignals.cpp
+    handlersignals.cpp \
+    listmodeljobs.cpp
 
 RESOURCES += qml.qrc \
     gallery.qrc
@@ -18,4 +19,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    handlersignals.h
+    handlersignals.h \
+    listmodeljobs.h
+
+DISTFILES += \
+    Database/database.sqlite
