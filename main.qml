@@ -4,6 +4,8 @@ import QtQuick.Controls 1.4
 
 Window {
     signal usedMenu(int index)
+    signal getIndexListJobs(int index)
+    signal getIndexListWorkers(int index)
 
     visible: true
     id: mainWindow
@@ -62,6 +64,7 @@ Window {
                 color: "#99958c"
 
                 ListView {
+                    clip: true
                     interactive: false
                     anchors.fill: parent
 
@@ -96,15 +99,35 @@ Window {
             anchors.top: toolBar.bottom
             _openMarginSize: 0
             position: Qt.RightEdge
-            //////
+            /////
+
             Rectangle {
                 anchors.fill: parent
-
                 color: "#99958c"
 
+                Button {
+                    id: livesearch
+                    width: nav.width
+                    height: mainWindow.height * 0.125
+                    anchors.top: parent.top
+                    anchors.bottom: listJobs.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    text: "Поиск:"
+                    style: BlackButtonStyle {
+                    }
+
+                }
+
                 ListView {
-                    interactive: false
-                    anchors.fill: parent
+                    id: listJobs
+                    clip: true
+                    //interactive: false
+                    //anchors.fill: parent
+                    anchors.top: livesearch.bottom
+                    anchors.bottom: parent.bottom
+                    anchors.left: parent.left
+                    anchors.right: parent.right
 
                     model: db_model_jobs
 
@@ -117,8 +140,50 @@ Window {
                         }
 
                         onClicked: {
-                            console.log(db_model_jobs.getId(id))
-                            //db_model_jobs.getId(id)
+                            getIndexListJobs(index)
+                            //console.log(db_model_jobs.data(ListView.currentIndex,id));
+                            //console.log(db_model_jobs.getId(id))
+                            //db_model_jobs.getId(index)
+                        }
+                    }
+                }
+            }
+        }
+
+        NavigationDrawer {
+            id: showWorkers
+            //bug№3
+            _rootItem: addArea
+            anchors.top: toolBar.bottom
+            _openMarginSize: 0
+            position: Qt.RightEdge
+            /////
+
+            Rectangle {
+                anchors.fill: parent
+                color: "#99958c"
+
+                ListView {
+                    id: listWorkers
+                    clip: true
+                    //interactive: false
+                    anchors.fill: parent
+
+                    model: db_model_workers
+
+                    delegate: Button {
+                        width: nav.width
+                        height: mainWindow.height * 0.125
+
+                        text: fio
+                        style: BlackButtonStyle {
+                        }
+
+                        onClicked: {
+                            getIndexListWorkers(index)
+                            //console.log(db_model_jobs.data(ListView.currentIndex,id));
+                            //console.log(db_model_jobs.getId(id))
+                            //db_model_jobs.getId(index)
                         }
                     }
                 }

@@ -5,7 +5,8 @@ CONFIG += c++11
 
 SOURCES += main.cpp \
     handlersignals.cpp \
-    listmodeljobs.cpp
+    listmodeljobs.cpp \
+    listmodelworkers.cpp
 
 RESOURCES += qml.qrc \
     gallery.qrc
@@ -20,7 +21,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     handlersignals.h \
-    listmodeljobs.h
+    listmodeljobs.h \
+    listmodelworkers.h
 
 DISTFILES += \
     Database/database.sqlite

@@ -65,6 +65,7 @@ Rectangle {
                     //дейтсвие при нажатии, сигнал создания узлов
                     //bgImage.source = iconSource
                     bgLabel.text = text + "выбрано"
+                    showWorkers.toggle()
                 }
                 iconSource: "qrc:/images/icon-addNode-addArea.png"
             }

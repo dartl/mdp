@@ -48,8 +48,26 @@ void ListModelJobs::refresh()
     this->setQuery(SQL_SELECT,mybase);
 }
 
-int ListModelJobs::getId(int id)
+int ListModelJobs::getId(int index)
 {
-    //qDebug() << id;
-    return id;
+    return this->data(this->index(index,0),0).toInt();
+}
+
+QString ListModelJobs::getTitle(int index)
+{
+    return this->data(this->index(index,1),0).toString();
+}
+
+int ListModelJobs::getIndex(int index)
+{
+//    qDebug() << index;
+//    qDebug() << this->getId(index);
+//    qDebug() << this->getTitle(index);
+//    qDebug() << this->elementsCount();
+    return index;
+}
+
+int ListModelJobs::elementsCount()
+{
+    return this->rowCount();
 }

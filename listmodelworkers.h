@@ -1,13 +1,14 @@
-#ifndef LISTMODELJOBS_H
-#define LISTMODELJOBS_H
+#ifndef LISTMODELWORKERS_H
+#define LISTMODELWORKERS_H
 
 #include <QObject>
 #include <QSqlQueryModel>
 #include <QSqlDatabase>
 #include <QDebug>
 
-class ListModelJobs : public QSqlQueryModel
+class ListModelWorkers : public QSqlQueryModel
 {
+public:
     Q_OBJECT
 private:
     QSqlDatabase mybase;
@@ -16,7 +17,7 @@ private:
 
 public:
 
-    explicit ListModelJobs(QSqlDatabase mybase, QObject *parent = 0);
+    explicit ListModelWorkers(QSqlDatabase mybase, QObject *parent = 0);
     QVariant data(const QModelIndex &index, int role) const;
 protected:
     QHash<int, QByteArray> roleNames() const;
@@ -26,9 +27,14 @@ signals:
 public slots:
     void refresh();
     int getId(int index);
-    QString getTitle(int index);
+    QString getFIO(int index);
+    QString getSex(int index);
+    int getAge(int index);
+    QString Adress(int index);
+    QString getSpeciality(int index);
+    int getLevelSpec(int index);
     int getIndex(int index);
     int elementsCount();
 };
 
-#endif // LISTMODELJOBS_H
+#endif // LISTMODELWORKERS_H
