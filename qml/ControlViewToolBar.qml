@@ -31,7 +31,8 @@ BlackButtonBackground {
         //onClicked: stackView.pop()
         onClicked: {
             nav.toggle();
-            showJobs.hide()
+            showJobs.hide();
+            showWorkers.hide();
         }
         style: BlackButtonStyle {
         }

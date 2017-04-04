@@ -18,6 +18,7 @@ public:
 
     explicit ListModelJobs(QSqlDatabase mybase, QObject *parent = 0);
     QVariant data(const QModelIndex &index, int role) const;
+
 protected:
     QHash<int, QByteArray> roleNames() const;
 
@@ -30,6 +31,7 @@ public slots:
     int getIndex(int index);
     int elementsCount();
     int getIndexById(int id);
+    int getIndexByTitle(QString title);
 };
 
 #endif // LISTMODELJOBS_H

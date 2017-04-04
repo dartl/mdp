@@ -4,7 +4,7 @@ import QtQuick.Controls 1.4
 
 Window {
     signal usedMenu(int index)
-    signal getIndexListJobs(int index)
+    signal getIndexListJobs(string title)
     signal getIndexListWorkers(int index)
 
     visible: true
@@ -100,23 +100,25 @@ Window {
             _openMarginSize: 0
             position: Qt.RightEdge
             /////
+            property string titleSearch: "null"
 
             Rectangle {
                 anchors.fill: parent
                 color: "#99958c"
 
-                Button {
+                TextField {
                     id: livesearch
+                    focus: true
                     width: nav.width
                     height: mainWindow.height * 0.125
                     anchors.top: parent.top
                     anchors.bottom: listJobs.top
                     anchors.left: parent.left
                     anchors.right: parent.right
-                    text: "Поиск:"
-                    style: BlackButtonStyle {
-                    }
-
+                    placeholderText: "Введите специальность для поиска специалиста"
+//                    style: BlackButtonStyle {
+//                    }
+                    onTextChanged: db_model_jobs.setFilterFixedString(text)
                 }
 
                 ListView {
@@ -129,18 +131,22 @@ Window {
                     anchors.left: parent.left
                     anchors.right: parent.right
 
+
                     model: db_model_jobs
 
                     delegate: Button {
+
+                        id: delegateListJobs
                         width: nav.width
                         height: mainWindow.height * 0.125
-
                         text: title
                         style: BlackButtonStyle {
                         }
 
                         onClicked: {
-                            getIndexListJobs(index)
+                            //console.log(db_model_jobs.get(index));
+                            getIndexListJobs(title);
+
                             //console.log(db_model_jobs.data(ListView.currentIndex,id));
                             //console.log(db_model_jobs.getId(id))
                             //db_model_jobs.getId(index)
@@ -181,9 +187,6 @@ Window {
 
                         onClicked: {
                             getIndexListWorkers(index)
-                            //console.log(db_model_jobs.data(ListView.currentIndex,id));
-                            //console.log(db_model_jobs.getId(id))
-                            //db_model_jobs.getId(index)
                         }
                     }
                 }

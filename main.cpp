@@ -8,6 +8,7 @@
 #include "handlersignals.h"
 #include "listmodeljobs.h"
 #include "listmodelworkers.h"
+#include <QSortFilterProxyModel>
 
 int main(int argc, char *argv[])
 {
@@ -27,7 +28,12 @@ int main(int argc, char *argv[])
     ListModelJobs* model_jobs = new ListModelJobs(mybase);
     ListModelWorkers* model_workers = new ListModelWorkers(mybase);
 
-    engine.rootContext()->setContextProperty("db_model_jobs", model_jobs);
+    QSortFilterProxyModel* proxy = new QSortFilterProxyModel();
+    proxy->setSourceModel(model_jobs);
+    proxy->setFilterRole(Qt::UserRole + 2);
+    proxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
+
+    engine.rootContext()->setContextProperty("db_model_jobs", proxy);
     engine.rootContext()->setContextProperty("db_model_workers", model_workers);
 
     engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
@@ -41,8 +47,8 @@ int main(int argc, char *argv[])
     QObject::connect(handlerSignals,SIGNAL(exit()),
                      qApp,SLOT(quit()));
 
-    QObject::connect(mainWindow,SIGNAL(getIndexListJobs(int)),
-                     model_jobs,SLOT(getIndex(int)));
+    QObject::connect(mainWindow,SIGNAL(getIndexListJobs(QString)),
+                     model_jobs,SLOT(getIndexByTitle(QString)));
 
     QObject::connect(mainWindow,SIGNAL(getIndexListWorkers(int)),
                      model_workers,SLOT(getIndex(int)));

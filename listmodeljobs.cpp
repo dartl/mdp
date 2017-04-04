@@ -63,7 +63,7 @@ int ListModelJobs::getIndex(int index)
 //    qDebug() << index;
 //    qDebug() << this->getId(index);
 //    qDebug() << this->getTitle(index);
-//    qDebug() << this->elementsCount();
+    //qDebug() << this->elementsCount();
     return index;
 }
 
@@ -81,5 +81,19 @@ int ListModelJobs::getIndexById(int id)
             break;
         }
     }
+    return index;
+}
+
+int ListModelJobs::getIndexByTitle(QString title)
+{
+    int index = -1;
+    for (int i = 0; i < this->elementsCount(); ++i) {
+        if (this->getTitle(i) == title) {
+            index = i;
+            break;
+        }
+    }
+//    qDebug() << this->getId(index);
+//    qDebug() << this->getTitle(index);
     return index;
 }
