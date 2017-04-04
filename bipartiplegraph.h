@@ -142,7 +142,7 @@ public:
             return *v;
         } else {
             // нужно заменить исключением
-            return Node<Type>();
+ //           return Node<Type>();
         }
     }
     void removeVertixNode(int n){

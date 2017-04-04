@@ -1,15 +1,17 @@
 TEMPLATE = app
 
-QT += qml quick
+QT += qml quick sql
 CONFIG += c++11
 
 SOURCES += main.cpp \
     handlersignals.cpp \
+    listmodeljobs.cpp \
+    listmodelworkers.cpp \
     algorithm.cpp \
     bipartiplegraph.cpp
 
-RESOURCES += qml.qrc \
-    gallery.qrc
+RESOURCES += \
+    mdp.qrc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
@@ -21,5 +23,10 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     handlersignals.h \
+    listmodeljobs.h \
+    listmodelworkers.h \
     algorithm.h \
     bipartiplegraph.h
+
+DISTFILES += \
+    Database/database.sqlite

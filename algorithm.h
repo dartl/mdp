@@ -2,41 +2,43 @@
 #define ALGORITHM_H
 
 #include "bipartiplegraph.h"
+#include "listmodeljobs.h"
+#include "listmodelworkers.h"
 #include <vector>
 #include <string>
 #include <QDebug>
+#include <QObject>
 
-struct JobType
+
+
+
+class Algorithm : public QObject
 {
-    std::string title;
-    int id;
-};
-
-struct WorkerType
-{
-    int id;
-    std::string title;
-    int weight;
-};
-
-
-
-class Algorithm
-{
+    Q_OBJECT
     BipartiteGraph<int>* graph;
-    std::vector<JobType> jobs;
-    std::vector<WorkerType> workers;
+    ListModelJobs* jobs;
+    ListModelWorkers* workers;
+
 
 public:
-    Algorithm();
+    explicit Algorithm(ListModelJobs* jobs, ListModelWorkers* workers, QObject* parent = 0);
     ~Algorithm();
 
-    void PrintVertixs();
+    void setGraph(BipartiteGraph<int>* graph)  { this->graph = graph;}
+    BipartiteGraph<int>* getGraph(){ return this->graph; }
 
-    void addLeftNodeGraph(std::vector<JobType> vec, int id);
-    std::vector<JobType> getJobs() const;
-    std::vector<WorkerType> getWorkers() const;
-    BipartiteGraph<int> *getGraph() const;
+    void PrintVertixs();
+    void PrintPairs();
+
+
+signals:
+    void existingNode();
+
+public slots:
+    void addLeftNodeGraph(QString title);
+    void addRightPartGraph();
+
+
 };
 
 #endif // ALGORITHM_H

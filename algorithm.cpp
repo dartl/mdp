@@ -1,59 +1,10 @@
 #include "algorithm.h"
 
-std::vector<JobType> Algorithm::getJobs() const
+
+Algorithm::Algorithm(ListModelJobs *jobs, ListModelWorkers *workers, QObject* parent): QObject(parent)
 {
-    return jobs;
-}
-
-std::vector<WorkerType> Algorithm::getWorkers() const
-{
-    return workers;
-}
-
-BipartiteGraph<int> *Algorithm::getGraph() const
-{
-    return graph;
-}
-
-Algorithm::Algorithm()
-{
-    workers.resize(6);
-
-    workers[0].id = 1;
-    workers[0].title = "Lawyer";
-    workers[0].weight = 3;
-
-    workers[1].id = 2;
-    workers[1].title = "Manager";
-    workers[1].weight = 2;
-
-    workers[2].id = 3;
-    workers[2].title = "Programmer";
-    workers[2].weight = 4;
-
-    workers[3].id = 4;
-    workers[3].title = "Designer";
-    workers[3].weight = 1;
-
-    workers[4].id = 5;
-    workers[4].title = "Lawyer";
-    workers[4].weight = 2;
-
-    workers[5].id = 6;
-    workers[5].title = "Programmer";
-    workers[5].weight = 6;
-
-    jobs.resize(3);
-
-    jobs[0].id = 1;
-    jobs[0].title = "Lawyer";
-
-    jobs[1].id = 2;
-    jobs[1].title = "Designer";
-
-    jobs[2].id = 3;
-    jobs[2].title = "Programmer";
-
+    this->jobs = jobs;
+    this->workers = workers;
     graph = new BipartiteGraph<int>();
 
 }
@@ -62,27 +13,70 @@ Algorithm::~Algorithm()
 {
     if (graph != nullptr)
         delete graph;
-
-    jobs.clear();
-    workers.clear();
 }
 
 void Algorithm::PrintVertixs()
 {
     qDebug() << "List all vertixs:";
     for (BipartiteGraph<int>::IteratorVertixs i = (*graph).beginVertixs();i != (*graph).endVertixs(); ++i) {
-          qDebug() << (*i).getData() << ' ';
+          qDebug() << "(" << (*i).getData() << ',' << (*i).isCheck() << ")";
     }
 }
 
-void Algorithm::addLeftNodeGraph(std::vector<JobType> vec, int id)
+void Algorithm::PrintPairs()
 {
-
-    for (int i = 0; i < vec.size(); i++)
-        if (vec[i].id == id)
-        {
-            graph->addVertix(id, true);
-            break;
-        }
+    qDebug() << "List all pairs:";
+    for (BipartiteGraph<int>::IteratorPairs p = (*graph).beginPairs();p != (*graph).endPairs(); ++p) {
+        qDebug() << (*p).getFisrt().getData() << ' ' << (*p).getSecond().getData() << ' ';
+    }
 }
+
+void Algorithm::addLeftNodeGraph(QString title)
+{
+    int index = this->jobs->getIndexByTitle(title);
+    if (!graph->checkVertix(this->jobs->getId(index)))
+        graph->addVertix(this->jobs->getId(index), true);
+    else
+        emit existingNode();
+    PrintVertixs();
+}
+
+void Algorithm::addRightPartGraph()
+{
+    int j = 0;
+    for (BipartiteGraph<int>::IteratorVertixs i = (*graph).beginVertixs(); i != (*graph).endVertixs(); i++, j++)
+    {
+
+        if (!(*i).isCheck())
+            graph->removeVertixNode(j);
+            // TODO: удалить все вершины с параметром false
+    }
+    for (BipartiteGraph<int>::IteratorVertixs i = (*graph).beginVertixs(); i != (*graph).endVertixs(); i++)
+    {
+        if ((*i).isCheck()) {
+            int currMax = -1;
+            int workerMax = -1;
+            int indexId = this->jobs->getIndexById((*i).getData());
+            for (int j = 0; j < this->workers->elementsCount(); j++)
+            {
+                if (this->jobs->getTitle(indexId) == this->workers->getSpeciality(j))
+                {
+                      if (this->workers->getLevelSpec(j) > currMax)
+                      {
+                          workerMax = j;
+                          currMax = this->workers->getLevelSpec(j);
+                      }
+                }
+
+            }
+            graph->addVertix(this->workers->getId(workerMax), false);
+
+        }
+
+//        graph->addPair(&(graph->getVertixNode((*i).getData())), &(graph->getVertixNode(this->workers->getId(workerMax))));
+    }
+    PrintVertixs();
+//    PrintPairs();
+}
+
 
