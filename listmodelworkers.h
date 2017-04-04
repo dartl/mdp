@@ -35,6 +35,7 @@ public slots:
     int getLevelSpec(int index);
     int getIndex(int index);
     int elementsCount();
+    int getIndexById(int id);
 };
 
 #endif // LISTMODELWORKERS_H

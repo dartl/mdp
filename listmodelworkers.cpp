@@ -95,10 +95,24 @@ int ListModelWorkers::getIndex(int index)
 //    qDebug() << this->getSpeciality(index);
 //    qDebug() << this->getLevelSpec(index);
 //    qDebug() << this->elementsCount();
+//    qDebug() << this->getIndexById(this->getId(index));
+//    qDebug() << this->getIndexById(25);
     return index;
 }
 
 int ListModelWorkers::elementsCount()
 {
     return this->rowCount();
+}
+
+int ListModelWorkers::getIndexById(int id)
+{
+    int index = -1;
+    for (int i = 0; i < this->elementsCount(); ++i) {
+        if (this->getId(i) == id) {
+            index = i;
+            break;
+        }
+    }
+    return index;
 }

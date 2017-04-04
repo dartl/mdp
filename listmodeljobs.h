@@ -29,6 +29,7 @@ public slots:
     QString getTitle(int index);
     int getIndex(int index);
     int elementsCount();
+    int getIndexById(int id);
 };
 
 #endif // LISTMODELJOBS_H

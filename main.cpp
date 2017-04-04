@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("db_model_jobs", model_jobs);
     engine.rootContext()->setContextProperty("db_model_workers", model_workers);
 
-    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+    engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
 
     QObject* mainWindow = engine.rootObjects()[0];
     HandlerSignals* handlerSignals = new HandlerSignals(mainWindow);

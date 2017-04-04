@@ -8,8 +8,8 @@ SOURCES += main.cpp \
     listmodeljobs.cpp \
     listmodelworkers.cpp
 
-RESOURCES += qml.qrc \
-    gallery.qrc
+RESOURCES += \
+    mdp.qrc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =

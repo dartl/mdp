@@ -71,3 +71,15 @@ int ListModelJobs::elementsCount()
 {
     return this->rowCount();
 }
+
+int ListModelJobs::getIndexById(int id)
+{
+    int index = -1;
+    for (int i = 0; i < this->elementsCount(); ++i) {
+        if (this->getId(i) == id) {
+            index = i;
+            break;
+        }
+    }
+    return index;
+}

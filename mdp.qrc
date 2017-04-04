@@ -11,5 +11,11 @@
         <file>images/icon-save-menu.png</file>
         <file>images/icon-exit-menu.png</file>
         <file>images/icon-addNode-addArea.png</file>
+        <file>qml/AdditionArea.qml</file>
+        <file>qml/BlackButtonBackground.qml</file>
+        <file>qml/BlackButtonStyle.qml</file>
+        <file>qml/ControlViewToolBar.qml</file>
+        <file>qml/main.qml</file>
+        <file>qml/NavigationDrawer.qml</file>
     </qresource>
 </RCC>
