@@ -2,6 +2,8 @@
 #define BIPARTITEGRAPH_H
 #include <list>
 #include <iostream>
+#include <exception>
+#include <string>
 
 /* Шаблон вершины графа */
 template <class Type> class Node{
@@ -137,12 +139,17 @@ public:
                 break;
             }
         }
-        if (check) {
-            return *v;
-        } else {
-            // нужно заменить исключением
-            return Node<Type>();
+        try {
+            if (check) {
+                return *v;
+            } else {
+                throw BipartiteGraphNodeNotFoundException("Node not found","getVertixNode(Type d)");
+            }
+        } catch(BipartiteGraphNodeNotFoundException e) {
+            std::cout << "Exeption: Function - " << e.nameFunction << ". ";
+            std::cout << "Message - " << e.message << ".";
         }
+
     }
     void removeVertixNode(int n){
         IteratorVertixs v = beginVertixs();
@@ -334,6 +341,17 @@ public:
         return IteratorPairs(pairs.end());
     }
 
+};
+
+
+class BipartiteGraphNodeNotFoundException
+{
+public:
+    static int timeToStart;
+    std::string message;
+    std::string nameFunction;
+    BipartiteGraphNodeNotFoundException(std::string m) :message(m) {}
+    BipartiteGraphNodeNotFoundException(std::string m, std::string name) :message(m), nameFunction(name) {}
 };
 
 #endif // BIPARTITEGRAPH_H
