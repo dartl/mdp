@@ -107,10 +107,12 @@ public:
         vertixs.push_back(temp);
     }
     void popFrontVertix() {
-        vertixs.pop_front();
+        Node<Type> node = vertixs.front();
+        removeVertixNode(node.getData());
     }
     void popBackVertix() {
-        vertixs.pop_back();
+        Node<Type> node = vertixs.back();
+        removeVertixNode(node.getData());
     }
     Node<Type>& getVertixNodeByNumber(int n){
         IteratorVertixs v = beginVertixs();
@@ -167,7 +169,25 @@ public:
     }
 
     // Удалить вершину и все связанные ребра по Type
-    void removeVertixNode(Type t){
+    void removeVertixNodeByObject(Type t){
+        IteratorVertixs v = beginVertixs();
+        for(; v != endVertixs(); v++) {
+            Node<Type> temp =*v;
+            if (temp.getData() == t) {
+                break;
+            }
+        }
+        int find = findPairNode(*v);
+        while (find != -1) {
+            removePairNode(find);
+            find = findPairNode(*v);
+        }
+        vertixs.erase(v.getCurrent());
+    }
+
+    // Удалить вершину и все связанные ребра по итератору
+    void removeVertixNode(Node<Type> g){
+        Type t = g.getData();
         IteratorVertixs v = beginVertixs();
         for(; v != endVertixs(); v++) {
             Node<Type> temp =*v;
@@ -196,7 +216,7 @@ public:
             i++;
         }
         for(int i = 0; i < myVector.size(); i++) {
-            removeVertixNode(myVector[i]);
+            removeVertixNodeByObject(myVector[i]);
         }
     }
 
@@ -213,8 +233,21 @@ public:
             i++;
         }
         for(int i = 0; i < myVector.size(); i++) {
-            removeVertixNode(myVector[i]);
+            removeVertixNodeByObject(myVector[i]);
         }
+    }
+
+    // Метод, возвращающий список ребер выбранной вершины
+    std::list<PairNode<Type>> getPairsList(Type t){
+        std::list<PairNode<Type>> pairs;
+        IteratorPairs v = beginPairs();
+        for(; v != endPairs(); v++) {
+            PairNode<Type> temp =*v;
+            if (temp.getFisrt().getData() == t || temp.getSecond().getData() == t) {
+                pairs.push_back(temp);
+            }
+        }
+        return pairs;
     }
 
     // Итератор для списка вершин
