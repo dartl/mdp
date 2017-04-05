@@ -4,6 +4,7 @@
 #include <iostream>
 #include <exception>
 #include <string>
+#include <vector>
 
 /* Шаблон вершины графа */
 template <class Type> class Node{
@@ -151,7 +152,8 @@ public:
         }
 
     }
-    void removeVertixNode(int n){
+
+    void removeVertixNodeByNumber(int n){
         IteratorVertixs v = beginVertixs();
         for(int i = 0; i < n;i++){
             ++v;
@@ -162,6 +164,57 @@ public:
             find = findPairNode(*v);
         }
         vertixs.erase(v.getCurrent());
+    }
+
+    // Удалить вершину и все связанные ребра по Type
+    void removeVertixNode(Type t){
+        IteratorVertixs v = beginVertixs();
+        for(; v != endVertixs(); v++) {
+            Node<Type> temp =*v;
+            if (temp.getData() == t) {
+                break;
+            }
+        }
+        int find = findPairNode(*v);
+        while (find != -1) {
+            removePairNode(find);
+            find = findPairNode(*v);
+        }
+        vertixs.erase(v.getCurrent());
+    }
+
+    // Метод, удаляющий все True вершины
+    void removeAllTrue() {
+        IteratorVertixs v = beginVertixs();
+        std::vector<Type> myVector;
+        int i = 0;
+        for(; v != endVertixs(); v++){
+            Node<Type> node = *v;
+            if (node.isCheck()) {
+                myVector.insert(myVector.end(),node.getData());
+            }
+            i++;
+        }
+        for(int i = 0; i < myVector.size(); i++) {
+            removeVertixNode(myVector[i]);
+        }
+    }
+
+    // Метод, удаляющий все False вершины
+    void removeAllFalse() {
+        IteratorVertixs v = beginVertixs();
+        std::vector<Type> myVector;
+        int i = 0;
+        for(; v != endVertixs(); v++){
+            Node<Type> node = *v;
+            if (!node.isCheck()) {
+                myVector.insert(myVector.end(),node.getData());
+            }
+            i++;
+        }
+        for(int i = 0; i < myVector.size(); i++) {
+            removeVertixNode(myVector[i]);
+        }
     }
 
     // Итератор для списка вершин
