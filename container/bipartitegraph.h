@@ -108,11 +108,11 @@ public:
     }
     void popFrontVertix() {
         Node<Type> node = vertixs.front();
-        removeVertixNode(node.getData());
+        removeVertixNodeByObject(node.getData());
     }
     void popBackVertix() {
         Node<Type> node = vertixs.back();
-        removeVertixNode(node.getData());
+        removeVertixNodeByObject(node.getData());
     }
     Node<Type>& getVertixNodeByNumber(int n){
         IteratorVertixs v = beginVertixs();
@@ -170,24 +170,6 @@ public:
 
     // Удалить вершину и все связанные ребра по Type
     void removeVertixNodeByObject(Type t){
-        IteratorVertixs v = beginVertixs();
-        for(; v != endVertixs(); v++) {
-            Node<Type> temp =*v;
-            if (temp.getData() == t) {
-                break;
-            }
-        }
-        int find = findPairNode(*v);
-        while (find != -1) {
-            removePairNode(find);
-            find = findPairNode(*v);
-        }
-        vertixs.erase(v.getCurrent());
-    }
-
-    // Удалить вершину и все связанные ребра по итератору
-    void removeVertixNode(Node<Type> g){
-        Type t = g.getData();
         IteratorVertixs v = beginVertixs();
         for(; v != endVertixs(); v++) {
             Node<Type> temp =*v;
@@ -427,6 +409,23 @@ public:
         return IteratorPairs(pairs.end());
     }
 
+    // Удалить вершину и все связанные ребра по итератору
+    void removeVertixNode(IteratorVertixs g){
+        Node<Type> t = (*g).getData();
+        IteratorVertixs v = beginVertixs();
+        for(; v != endVertixs(); v++) {
+            Node<Type> temp =*v;
+            if (temp.getData() == t.getData()) {
+                break;
+            }
+        }
+        int find = findPairNode(*v);
+        while (find != -1) {
+            removePairNode(find);
+            find = findPairNode(*v);
+        }
+        vertixs.erase(v.getCurrent());
+    }
 };
 
 
