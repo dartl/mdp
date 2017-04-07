@@ -1,8 +1,10 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
-#include <QSqlDatabase>
-#include <QDebug>
 #include <QQmlContext>
+#include <QSettings>
+#include <QQuickStyle>
+#include <QDebug>
+#include <QSqlDatabase>
 #include <QSqlError>
 
 #include "handlersignals.h"
@@ -13,8 +15,9 @@
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
+    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QQmlApplicationEngine engine;
-
+    QQuickStyle::setStyle("Material");
     QSqlDatabase mybase;
 
     //connect with BD
@@ -37,6 +40,8 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("db_model_workers", model_workers);
 
     engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
+    if (engine.rootObjects().isEmpty())
+        return -1;
 
     QObject* mainWindow = engine.rootObjects()[0];
     HandlerSignals* handlerSignals = new HandlerSignals(mainWindow);

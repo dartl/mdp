@@ -72,7 +72,7 @@ int ListModelWorkers::getAge(int index)
     return this->data(this->index(index,3),0).toInt();
 }
 
-QString ListModelWorkers::Adress(int index)
+QString ListModelWorkers::getAdress(int index)
 {
     return this->data(this->index(index,4),0).toString();
 }
