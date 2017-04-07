@@ -70,13 +70,14 @@ void Algorithm::addRightPartGraph()
 
             }
             graph->addVertix(this->workers->getId(workerMax), false);
+            graph->addPair(&(graph->getVertixNode((*i).getData())), &(graph->getVertixNode(this->workers->getId(workerMax))));
 
         }
 
 //        graph->addPair(&(graph->getVertixNode((*i).getData())), &(graph->getVertixNode(this->workers->getId(workerMax))));
     }
     PrintVertixs();
-//    PrintPairs();
+    PrintPairs();
 }
 
 
