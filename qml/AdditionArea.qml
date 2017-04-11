@@ -7,6 +7,17 @@ Pane {
 
     property real indexDeleteNode: -1
 
+    function getSpecialties(id) {
+        var text_specialties = "";
+        for (var i = 0; i < db_model_relations.columnCount(); ++i) {
+            if (db_model_relations.getIdSpecialist(i) === id) {
+                text_specialties += db_model_jobs.getTitle(db_model_jobs.getIndexById(db_model_relations.getIdSpecialty(i)));
+                text_specialties += "\n";
+            }
+        }
+        return text_specialties;
+    }
+
     ColumnLayout {
         spacing: 40
         anchors.fill: parent
@@ -21,66 +32,66 @@ Pane {
         }
     }
 
-    Drawer {
-        id: showJobs
-        edge: Qt.RightEdge
-        width: Math.min(mainWindow.width, mainWindow.height) / 3 * 2
-        height: mainWindow.height
-        dragMargin: 10
+//    Drawer {
+//        id: showJobs
+//        edge: Qt.RightEdge
+//        width: Math.min(mainWindow.width, mainWindow.height) / 3 * 2
+//        height: mainWindow.height
+//        dragMargin: 10
 
-        Pane {
-            id: paneSearch
-            focus: true
+//        Pane {
+//            id: paneSearch
+//            focus: true
 
-            TextField {
-                id: lifeSearch
-                focus: true
-                width: showJobs.width - Math.min(imgSearch.width,imgSearch.height) - 20
-                placeholderText: "Введите специальность"
-                onTextChanged: db_model_jobs.setFilterFixedString(text)
-            }
+//            TextField {
+//                id: lifeSearch
+//                focus: true
+//                width: showJobs.width - Math.min(imgSearch.width,imgSearch.height) - 20
+//                placeholderText: "Введите специальность"
+//                onTextChanged: db_model_jobs_filter.setFilterFixedString(text)
+//            }
 
-            Image {
-                id: imgSearch
-                fillMode: Image.Pad
-                anchors.left: lifeSearch.right
-                anchors.leftMargin: 4
-                anchors.top: parent.top
-                anchors.topMargin: 8
-                source: "qrc:/images/icon-search-add.png"
-                horizontalAlignment: Image.AlignHCenter
-                verticalAlignment: Image.AlignVCenter
-            }
-        }
+//            Image {
+//                id: imgSearch
+//                fillMode: Image.Pad
+//                anchors.left: lifeSearch.right
+//                anchors.leftMargin: 4
+//                anchors.top: parent.top
+//                anchors.topMargin: 8
+//                source: "qrc:/images/icon-search-add.png"
+//                horizontalAlignment: Image.AlignHCenter
+//                verticalAlignment: Image.AlignVCenter
+//            }
+//        }
 
-        ListView {
-            id: listJobs
-            clip: true
-            currentIndex: -1
-            anchors.top: paneSearch.bottom
-            anchors.topMargin: paneSearch.height + 4
-            anchors.bottom: parent.bottom
-            anchors.left: parent.left
-            anchors.right: parent.right
+//        ListView {
+//            id: listJobs
+//            clip: true
+//            currentIndex: -1
+//            anchors.top: paneSearch.bottom
+//            anchors.topMargin: paneSearch.height + 4
+//            anchors.bottom: parent.bottom
+//            anchors.left: parent.left
+//            anchors.right: parent.right
 
-            delegate: ItemDelegate {
+//            delegate: ItemDelegate {
 
-                width: parent.width
-                text: title
-                  font.pixelSize: 20
-                highlighted: ListView.isCurrentItem
-                onClicked: {
+//                width: parent.width
+//                text: title
+//                  font.pixelSize: 20
+//                highlighted: ListView.isCurrentItem
+//                onClicked: {
 
-                    showJobs.close()
-                    nav.close()
-                }
-            }
+//                    showJobs.close()
+//                    nav.close()
+//                }
+//            }
 
-            model: db_model_jobs
+//            model: db_model_jobs_filter
 
-            ScrollIndicator.vertical: ScrollIndicator { }
-        }
-    }
+//            ScrollIndicator.vertical: ScrollIndicator { }
+//        }
+//    }
 
     Drawer {
         id: showWorks
@@ -88,40 +99,50 @@ Pane {
         width: Math.min(mainWindow.width, mainWindow.height) / 3 * 2
         height: mainWindow.height
         dragMargin: 10
+        Flickable {
+            id: fullInfo
+            anchors.fill: parent
+            contentWidth: parent.width
+            contentHeight: {
+                parent.height + labelText.height + labelTextfio.height + labelTextadress.height
+            }
 
-        Column {
-            id: infoColumn
-            spacing: 40
-            anchors.top: parent.top
-            anchors.topMargin: 40
-            anchors.left: parent.left
-            anchors.right: parent.right
+            flickableDirection: Flickable.VerticalFlick
+            clip: true
 
             Row {
                 id: infoFio
                 spacing: 10
+                anchors.top: parent.top
+                anchors.topMargin: 40
                 anchors.left: parent.left
                 anchors.leftMargin: 40
+                anchors.right: parent.right
+                anchors.rightMargin: 40
 
                 Label {
-
+                    id: labelTagfio
+                    color: Material.color(Material.BlueGrey)
                     wrapMode: Label.Wrap
                     font.pixelSize: 20
                     text: "ФИО: "
                 }
 
                 Label {
+                    id: labelTextfio
                     wrapMode: Label.Wrap
                     font.pixelSize: 20
-
-                    //text: "Огромный текст Огромный текст Огромный текст Огромный текст Огромный текст мОгромный текст"
-                    text: db_model_workers.getFIO(db_model_workers.getIndexById(1))
+                    width: infoFio.width - labelTagfio.width
+                    text: "Джанис Локелани Кеиханаикукауакахихулихеекахаунаеле"
+                    //text: db_model_workers.getFIO(db_model_workers.getIndexById(1))
                 }
 
             }
 
             Rectangle {
-                visible: true
+                id: delimiter
+                anchors.top: infoFio.bottom
+                anchors.topMargin: 40
                 anchors.left: parent.left
                 anchors.leftMargin: 40
                 anchors.right: parent.right
@@ -131,15 +152,18 @@ Pane {
                 radius: 10
             }
 
-            RowLayout {
+            Row {
                 id: infoSex
                 spacing: 10
-//                anchors.top: parent.top
-//                anchors.topMargin: 40
+                anchors.top: delimiter.bottom
+                anchors.topMargin: 40
                 anchors.left: parent.left
                 anchors.leftMargin: 40
+                anchors.right: parent.right
+                anchors.rightMargin: 40
 
                 Label {
+                    color: Material.color(Material.BlueGrey)
                     wrapMode: Label.Wrap
                     font.pixelSize: 20
                     text: "Пол: "
@@ -148,15 +172,15 @@ Pane {
                 Label {
                     wrapMode: Label.Wrap
                     font.pixelSize: 20
-
-                    //text: "Огромный текст Огромный текст Огромный текст Огромный текст Огромный текст мОгромный текст"
                     text: db_model_workers.getSex(db_model_workers.getIndexById(1))
                 }
 
             }
 
             Rectangle {
-                visible: true
+                id: delimiter2
+                anchors.top: infoSex.bottom
+                anchors.topMargin: 40
                 anchors.left: parent.left
                 anchors.leftMargin: 40
                 anchors.right: parent.right
@@ -166,14 +190,18 @@ Pane {
                 radius: 10
             }
 
-            RowLayout {
+            Row {
                 id: infoAge
                 spacing: 10
+                anchors.top: delimiter2.bottom
+                anchors.topMargin: 40
                 anchors.left: parent.left
                 anchors.leftMargin: 40
+                anchors.right: parent.right
+                anchors.rightMargin: 40
 
                 Label {
-
+                    color: Material.color(Material.BlueGrey)
                     wrapMode: Label.Wrap
                     font.pixelSize: 20
                     text: "Возраст: "
@@ -182,15 +210,15 @@ Pane {
                 Label {
                     wrapMode: Label.Wrap
                     font.pixelSize: 20
-
-                    //text: "Огромный текст Огромный текст Огромный текст Огромный текст Огромный текст мОгромный текст"
                     text: db_model_workers.getAge(db_model_workers.getIndexById(1))
                 }
 
             }
 
             Rectangle {
-                visible: true
+                id: delimiter3
+                anchors.top: infoAge.bottom
+                anchors.topMargin: 40
                 anchors.left: parent.left
                 anchors.leftMargin: 40
                 anchors.right: parent.right
@@ -200,31 +228,39 @@ Pane {
                 radius: 10
             }
 
-            RowLayout {
+            Row {
                 id: infoAdress
                 spacing: 10
+                anchors.top: delimiter3.bottom
+                anchors.topMargin: 40
                 anchors.left: parent.left
                 anchors.leftMargin: 40
+                anchors.right: parent.right
+                anchors.rightMargin: 40
 
                 Label {
-
+                    id: labelTagadress
+                    color: Material.color(Material.BlueGrey)
                     wrapMode: Label.Wrap
                     font.pixelSize: 20
                     text: "Город: "
                 }
 
                 Label {
+                    id: labelTextadress
                     wrapMode: Label.Wrap
                     font.pixelSize: 20
-
-                    //text: "Огромный текст Огромный текст Огромный текст Огромный текст Огромный текст мОгромный текст"
-                    text: db_model_workers.getAdress(db_model_workers.getIndexById(1))
+                    width: infoAdress.width - labelTagadress.width
+                    text: "Лланвайрпуллгуингиллгогерихуирндробуллллантисилиогого"
+                    //text: db_model_workers.getAdress(db_model_workers.getIndexById(1))
                 }
 
             }
 
             Rectangle {
-                visible: true
+                id: delimiter4
+                anchors.top: infoAdress.bottom
+                anchors.topMargin: 40
                 anchors.left: parent.left
                 anchors.leftMargin: 40
                 anchors.right: parent.right
@@ -237,27 +273,33 @@ Pane {
             Row {
                 id: infoSpeciality
                 spacing: 10
+                anchors.top: delimiter4.bottom
+                anchors.topMargin: 40
                 anchors.left: parent.left
                 anchors.leftMargin: 40
                 anchors.right: parent.right
-                width: showWorks.availableWidth
+                anchors.rightMargin: 40
+
 
                 Label {
-
+                    id: labelTag
+                    color: Material.color(Material.BlueGrey)
                     wrapMode: Label.Wrap
                     font.pixelSize: 20
                     text: "Cпециальность: "
                 }
 
                 Label {
-
+                    id: labelText
                     wrapMode: Label.Wrap
                     font.pixelSize: 20
-                    text: "Огромный текст Огромный тек"
-                    //text: db_model_workers.getSpeciality(db_model_workers.getIndexById(1))
+                    width: parent.width - labelTag.width
+                    text: "Программист С++" + "\nМенеджер" + "Web-Программист" + "Web-Программист" + "Web-Программист" + "\nWeb-Программист"
+                    //text: getSpecialties(1)
                 }
 
             }
+        ScrollIndicator.vertical: ScrollIndicator { }
         }
     }
 }

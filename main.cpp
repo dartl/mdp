@@ -6,11 +6,12 @@
 #include <QDebug>
 #include <QSqlDatabase>
 #include <QSqlError>
+#include <QSortFilterProxyModel>
 
 #include "handlersignals.h"
 #include "listmodeljobs.h"
 #include "listmodelworkers.h"
-#include <QSortFilterProxyModel>
+#include "listmodelrelationsss.h"
 
 int main(int argc, char *argv[])
 {
@@ -30,14 +31,17 @@ int main(int argc, char *argv[])
 
     ListModelJobs* model_jobs = new ListModelJobs(mybase);
     ListModelWorkers* model_workers = new ListModelWorkers(mybase);
+    ListModelRelationsSS* model_relations = new ListModelRelationsSS(mybase);
 
     QSortFilterProxyModel* proxy = new QSortFilterProxyModel();
     proxy->setSourceModel(model_jobs);
     proxy->setFilterRole(Qt::UserRole + 2);
     proxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
 
-    engine.rootContext()->setContextProperty("db_model_jobs", proxy);
+    engine.rootContext()->setContextProperty("db_model_jobs", model_jobs);
+    engine.rootContext()->setContextProperty("db_model_jobs_filter", proxy);
     engine.rootContext()->setContextProperty("db_model_workers", model_workers);
+    engine.rootContext()->setContextProperty("db_model_relations", model_relations);
 
     engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
     if (engine.rootObjects().isEmpty())

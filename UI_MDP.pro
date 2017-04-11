@@ -6,7 +6,8 @@ CONFIG += c++11
 SOURCES += main.cpp \
     handlersignals.cpp \
     listmodeljobs.cpp \
-    listmodelworkers.cpp
+    listmodelworkers.cpp \
+    listmodelrelationsss.cpp
 
 RESOURCES += \
     mdp.qrc
@@ -22,7 +23,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     handlersignals.h \
     listmodeljobs.h \
-    listmodelworkers.h
+    listmodelworkers.h \
+    listmodelrelationsss.h
 
 DISTFILES += \
     Database/database.sqlite
