@@ -6,8 +6,6 @@ const char* ListModelWorkers::COLUMN_NAMES[] {
     "sex",
     "age",
     "address",
-    "speciality",
-    "levelspec",
     NULL
 };
 
@@ -72,19 +70,9 @@ int ListModelWorkers::getAge(int index)
     return this->data(this->index(index,3),0).toInt();
 }
 
-QString ListModelWorkers::Adress(int index)
+QString ListModelWorkers::getAdress(int index)
 {
     return this->data(this->index(index,4),0).toString();
-}
-
-QString ListModelWorkers::getSpeciality(int index)
-{
-    return this->data(this->index(index,5),0).toString();
-}
-
-int ListModelWorkers::getLevelSpec(int index)
-{
-    return this->data(this->index(index,6),0).toInt();
 }
 
 int ListModelWorkers::getIndex(int index)

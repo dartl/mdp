@@ -1,26 +1,29 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
-#include <QSqlDatabase>
-#include <QDebug>
 #include <QQmlContext>
+#include <QSettings>
+#include <QQuickStyle>
+#include <QDebug>
+#include <QSqlDatabase>
 #include <QSqlError>
+#include <QSortFilterProxyModel>
 
 #include "handlersignals.h"
 #include "listmodeljobs.h"
 #include "listmodelworkers.h"
-#include "algorithm.h"
-#include <QSortFilterProxyModel>
+#include "listmodelrelationsss.h"
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
+    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QQmlApplicationEngine engine;
-
+    QQuickStyle::setStyle("Material");
     QSqlDatabase mybase;
 
     //connect with BD
     mybase = QSqlDatabase::addDatabase("QSQLITE");
-    mybase.setDatabaseName(qApp->applicationDirPath() + "/DataBase/database.sqlite");
+    mybase.setDatabaseName("/home/sergey/Документы/mdp-UI/Database/database.sqlite");
     if (!mybase.open())
     {
         qDebug() << mybase.lastError().text();
@@ -28,18 +31,21 @@ int main(int argc, char *argv[])
 
     ListModelJobs* model_jobs = new ListModelJobs(mybase);
     ListModelWorkers* model_workers = new ListModelWorkers(mybase);
+    ListModelRelationsSS* model_relations = new ListModelRelationsSS(mybase);
 
     QSortFilterProxyModel* proxy = new QSortFilterProxyModel();
     proxy->setSourceModel(model_jobs);
     proxy->setFilterRole(Qt::UserRole + 2);
     proxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
 
-    Algorithm* algorithm = new Algorithm(model_jobs, model_workers);
-
-    engine.rootContext()->setContextProperty("db_model_jobs", proxy);
+    engine.rootContext()->setContextProperty("db_model_jobs", model_jobs);
+    engine.rootContext()->setContextProperty("db_model_jobs_filter", proxy);
     engine.rootContext()->setContextProperty("db_model_workers", model_workers);
+    engine.rootContext()->setContextProperty("db_model_relations", model_relations);
 
     engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
+    if (engine.rootObjects().isEmpty())
+        return -1;
 
     QObject* mainWindow = engine.rootObjects()[0];
     HandlerSignals* handlerSignals = new HandlerSignals(mainWindow);
@@ -51,16 +57,10 @@ int main(int argc, char *argv[])
                      qApp,SLOT(quit()));
 
     QObject::connect(mainWindow,SIGNAL(getIndexListJobs(QString)),
-                     algorithm,SLOT(addLeftNodeGraph(QString)));
+                     model_jobs,SLOT(getIndexByTitle(QString)));
 
     QObject::connect(mainWindow,SIGNAL(getIndexListWorkers(int)),
                      model_workers,SLOT(getIndex(int)));
-
-    QObject::connect(algorithm, SIGNAL(existingNode()),
-                     handlerSignals, SLOT(messageExistNode()));
-
-    QObject::connect(mainWindow, SIGNAL(updateGraph()),
-                     algorithm, SLOT(addRightPartGraph()));
 
     return app.exec();
 }

@@ -4,13 +4,14 @@
 #include "bipartiplegraph.h"
 #include "listmodeljobs.h"
 #include "listmodelworkers.h"
+#include "listmodelrelationsss.h"
 #include <vector>
 #include <string>
 #include <QDebug>
 #include <QObject>
 
 
-
+using namespace bpg;
 
 class Algorithm : public QObject
 {
@@ -18,10 +19,12 @@ class Algorithm : public QObject
     BipartiteGraph<int>* graph;
     ListModelJobs* jobs;
     ListModelWorkers* workers;
+    ListModelRelationsSS* relations;
 
 
 public:
-    explicit Algorithm(ListModelJobs* jobs, ListModelWorkers* workers, QObject* parent = 0);
+    explicit Algorithm(ListModelJobs* jobs, ListModelWorkers* workers,
+                       ListModelRelationsSS* relations, QObject* parent = 0);
     ~Algorithm();
 
     void setGraph(BipartiteGraph<int>* graph)  { this->graph = graph;}

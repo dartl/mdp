@@ -15,7 +15,6 @@ signals:
     void exit();
 public slots:
     void menu(const int index);
-    void messageExistNode();
 };
 
 #endif // HANDLERSIGNALS_H

@@ -30,9 +30,7 @@ public slots:
     QString getFIO(int index);
     QString getSex(int index);
     int getAge(int index);
-    QString Adress(int index);
-    QString getSpeciality(int index);
-    int getLevelSpec(int index);
+    QString getAdress(int index);
     int getIndex(int index);
     int elementsCount();
     int getIndexById(int id);

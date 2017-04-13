@@ -1,74 +1,305 @@
-import QtQuick 2.7
-import QtGraphicalEffects 1.0
-import QtQuick.Controls 1.4
-import QtQuick.Extras 1.4
-
-Rectangle {
+import QtQuick 2.6
+import QtQuick.Controls 2.0
+import QtQuick.Layouts 1.3
+import QtQuick.Controls.Material 2.0
+Pane {
     id: additionArea
 
-    //property ControlViewToolBar toolBarHeight: toolBar
-    //property alias controlItem: pieMenu
+    property real indexDeleteNode: -1
 
-    Item {
-        id: controlBoundsItem
-        width: parent.width
-        height: parent.height
-        //подгрузка данного элемента по сигналу
-        //visible: false
-
-//        Image {
-//            id: bgImage
-//            anchors.centerIn: parent
-//            height: 48
-            Text {
-                id: bgLabel
-                anchors.top: parent.bottom
-                //anchors.topMargin: 50
-                anchors.centerIn: parent
-                text: "Нажми для взаимодействия"
-                color: "#99958c"
-                font.pointSize: 20
-                font.family: openSans.name
+    function getSpecialties(id) {
+        var text_specialties = "";
+        for (var i = 0; i < db_model_relations.columnCount(); ++i) {
+            if (db_model_relations.getIdSpecialist(i) === id) {
+                text_specialties += db_model_jobs.getTitle(db_model_jobs.getIndexById(db_model_relations.getIdSpecialty(i)));
+                text_specialties += "\n";
             }
-        //}
-
-        MouseArea {
-            id: touchArea
-            anchors.fill: parent
-            onClicked: pieMenu.popup(touchArea.mouseX, touchArea.mouseY)
-            //onClicked: {pieMenu.popup(touchArea.mouseX, touchArea.mouseY); bgLabel.text = "";}
-            //долгое нажатие
-            onPressAndHold: console.log("pressed")
         }
+        return text_specialties;
+    }
 
-        PieMenu {
-            id: pieMenu
-            triggerMode: TriggerMode.TriggerOnClick
-            width: Math.min(controlBoundsItem.width, controlBoundsItem.height) * 0.5
-            height: width
+    ColumnLayout {
+        spacing: 40
+        anchors.fill: parent
 
-            //style: BlackButtonStyle{}
+        Label {
 
-            MenuItem {
-                text: "Добавить"
-                onTriggered: {
-                    //дейтсвие при нажатии, сигнал создания узлов
-                    //bgImage.source = iconSource
-                    bgLabel.text = text + "выбрано";
-                    showJobs.toggle();
-                }
-                iconSource: "qrc:/images/icon-addNode-addArea.png"
+            width: parent.width
+            wrapMode: Label.Wrap
+            Layout.alignment:  Qt.AlignHCenter
+            text: "BusyIndicator is used to indicate activity while content is being loaded,"
+                  + " or when the UI is blocked waiting for a resource to become available."
+        }
+    }
+
+//    Drawer {
+//        id: showJobs
+//        edge: Qt.RightEdge
+//        width: Math.min(mainWindow.width, mainWindow.height) / 3 * 2
+//        height: mainWindow.height
+//        dragMargin: 10
+
+//        Pane {
+//            id: paneSearch
+//            focus: true
+
+//            TextField {
+//                id: lifeSearch
+//                focus: true
+//                width: showJobs.width - Math.min(imgSearch.width,imgSearch.height) - 20
+//                placeholderText: "Введите специальность"
+//                onTextChanged: db_model_jobs_filter.setFilterFixedString(text)
+//            }
+
+//            Image {
+//                id: imgSearch
+//                fillMode: Image.Pad
+//                anchors.left: lifeSearch.right
+//                anchors.leftMargin: 4
+//                anchors.top: parent.top
+//                anchors.topMargin: 8
+//                source: "qrc:/images/icon-search-add.png"
+//                horizontalAlignment: Image.AlignHCenter
+//                verticalAlignment: Image.AlignVCenter
+//            }
+//        }
+
+//        ListView {
+//            id: listJobs
+//            clip: true
+//            currentIndex: -1
+//            anchors.top: paneSearch.bottom
+//            anchors.topMargin: paneSearch.height + 4
+//            anchors.bottom: parent.bottom
+//            anchors.left: parent.left
+//            anchors.right: parent.right
+
+//            delegate: ItemDelegate {
+
+//                width: parent.width
+//                text: title
+//                  font.pixelSize: 20
+//                highlighted: ListView.isCurrentItem
+//                onClicked: {
+
+//                    showJobs.close()
+//                    nav.close()
+//                }
+//            }
+
+//            model: db_model_jobs_filter
+
+//            ScrollIndicator.vertical: ScrollIndicator { }
+//        }
+//    }
+
+    Drawer {
+        id: showWorks
+        edge: Qt.RightEdge
+        width: Math.min(mainWindow.width, mainWindow.height) / 3 * 2
+        height: mainWindow.height
+        dragMargin: 10
+        Flickable {
+            id: fullInfo
+            anchors.fill: parent
+            contentWidth: parent.width
+            contentHeight: {
+                parent.height + labelText.height + labelTextfio.height + labelTextadress.height
             }
-            MenuItem {
-                text: "Добавить1"
-                onTriggered: {
-                    //дейтсвие при нажатии, сигнал создания узлов
-                    //bgImage.source = iconSource
-                    bgLabel.text = text + "выбрано"
-                    showWorkers.toggle()
+
+            flickableDirection: Flickable.VerticalFlick
+            clip: true
+
+            Row {
+                id: infoFio
+                spacing: 10
+                anchors.top: parent.top
+                anchors.topMargin: 40
+                anchors.left: parent.left
+                anchors.leftMargin: 40
+                anchors.right: parent.right
+                anchors.rightMargin: 40
+
+                Label {
+                    id: labelTagfio
+                    color: Material.color(Material.BlueGrey)
+                    wrapMode: Label.Wrap
+                    font.pixelSize: 20
+                    text: "ФИО: "
                 }
-                iconSource: "qrc:/images/icon-addNode-addArea.png"
+
+                Label {
+                    id: labelTextfio
+                    wrapMode: Label.Wrap
+                    font.pixelSize: 20
+                    width: infoFio.width - labelTagfio.width
+                    text: "Джанис Локелани Кеиханаикукауакахихулихеекахаунаеле"
+                    //text: db_model_workers.getFIO(db_model_workers.getIndexById(1))
+                }
+
             }
+
+            Rectangle {
+                id: delimiter
+                anchors.top: infoFio.bottom
+                anchors.topMargin: 40
+                anchors.left: parent.left
+                anchors.leftMargin: 40
+                anchors.right: parent.right
+                anchors.rightMargin: 40
+                height: 2
+                color: Material.color(Material.BlueGrey)
+                radius: 10
+            }
+
+            Row {
+                id: infoSex
+                spacing: 10
+                anchors.top: delimiter.bottom
+                anchors.topMargin: 40
+                anchors.left: parent.left
+                anchors.leftMargin: 40
+                anchors.right: parent.right
+                anchors.rightMargin: 40
+
+                Label {
+                    color: Material.color(Material.BlueGrey)
+                    wrapMode: Label.Wrap
+                    font.pixelSize: 20
+                    text: "Пол: "
+                }
+
+                Label {
+                    wrapMode: Label.Wrap
+                    font.pixelSize: 20
+                    text: db_model_workers.getSex(db_model_workers.getIndexById(1))
+                }
+
+            }
+
+            Rectangle {
+                id: delimiter2
+                anchors.top: infoSex.bottom
+                anchors.topMargin: 40
+                anchors.left: parent.left
+                anchors.leftMargin: 40
+                anchors.right: parent.right
+                anchors.rightMargin: 40
+                height: 2
+                color: Material.color(Material.BlueGrey)
+                radius: 10
+            }
+
+            Row {
+                id: infoAge
+                spacing: 10
+                anchors.top: delimiter2.bottom
+                anchors.topMargin: 40
+                anchors.left: parent.left
+                anchors.leftMargin: 40
+                anchors.right: parent.right
+                anchors.rightMargin: 40
+
+                Label {
+                    color: Material.color(Material.BlueGrey)
+                    wrapMode: Label.Wrap
+                    font.pixelSize: 20
+                    text: "Возраст: "
+                }
+
+                Label {
+                    wrapMode: Label.Wrap
+                    font.pixelSize: 20
+                    text: db_model_workers.getAge(db_model_workers.getIndexById(1))
+                }
+
+            }
+
+            Rectangle {
+                id: delimiter3
+                anchors.top: infoAge.bottom
+                anchors.topMargin: 40
+                anchors.left: parent.left
+                anchors.leftMargin: 40
+                anchors.right: parent.right
+                anchors.rightMargin: 40
+                height: 2
+                color: Material.color(Material.BlueGrey)
+                radius: 10
+            }
+
+            Row {
+                id: infoAdress
+                spacing: 10
+                anchors.top: delimiter3.bottom
+                anchors.topMargin: 40
+                anchors.left: parent.left
+                anchors.leftMargin: 40
+                anchors.right: parent.right
+                anchors.rightMargin: 40
+
+                Label {
+                    id: labelTagadress
+                    color: Material.color(Material.BlueGrey)
+                    wrapMode: Label.Wrap
+                    font.pixelSize: 20
+                    text: "Город: "
+                }
+
+                Label {
+                    id: labelTextadress
+                    wrapMode: Label.Wrap
+                    font.pixelSize: 20
+                    width: infoAdress.width - labelTagadress.width
+                    text: "Лланвайрпуллгуингиллгогерихуирндробуллллантисилиогого"
+                    //text: db_model_workers.getAdress(db_model_workers.getIndexById(1))
+                }
+
+            }
+
+            Rectangle {
+                id: delimiter4
+                anchors.top: infoAdress.bottom
+                anchors.topMargin: 40
+                anchors.left: parent.left
+                anchors.leftMargin: 40
+                anchors.right: parent.right
+                anchors.rightMargin: 40
+                height: 2
+                color: Material.color(Material.BlueGrey)
+                radius: 10
+            }
+
+            Row {
+                id: infoSpeciality
+                spacing: 10
+                anchors.top: delimiter4.bottom
+                anchors.topMargin: 40
+                anchors.left: parent.left
+                anchors.leftMargin: 40
+                anchors.right: parent.right
+                anchors.rightMargin: 40
+
+
+                Label {
+                    id: labelTag
+                    color: Material.color(Material.BlueGrey)
+                    wrapMode: Label.Wrap
+                    font.pixelSize: 20
+                    text: "Cпециальность: "
+                }
+
+                Label {
+                    id: labelText
+                    wrapMode: Label.Wrap
+                    font.pixelSize: 20
+                    width: parent.width - labelTag.width
+                    text: "Программист С++" + "\nМенеджер" + "Web-Программист" + "Web-Программист" + "Web-Программист" + "\nWeb-Программист"
+                    //text: getSpecialties(1)
+                }
+
+            }
+        ScrollIndicator.vertical: ScrollIndicator { }
         }
     }
 }

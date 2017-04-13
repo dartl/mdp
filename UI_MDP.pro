@@ -1,12 +1,13 @@
 TEMPLATE = app
 
-QT += qml quick sql
+QT += quick sql quickcontrols2
 CONFIG += c++11
 
 SOURCES += main.cpp \
     handlersignals.cpp \
     listmodeljobs.cpp \
     listmodelworkers.cpp \
+    listmodelrelationsss.cpp \
     algorithm.cpp \
     bipartiplegraph.cpp
 
@@ -25,6 +26,7 @@ HEADERS += \
     handlersignals.h \
     listmodeljobs.h \
     listmodelworkers.h \
+    listmodelrelationsss.h \
     algorithm.h \
     bipartiplegraph.h
 

@@ -14,8 +14,3 @@ void HandlerSignals::menu(const int index) {
         break;
     }
 }
-
-void HandlerSignals::messageExistNode()
-{
-    qDebug() << "Данная вершина уже присутствует в графе!";
-}
