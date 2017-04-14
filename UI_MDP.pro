@@ -7,7 +7,11 @@ SOURCES += main.cpp \
     handlersignals.cpp \
     listmodeljobs.cpp \
     listmodelworkers.cpp \
-    listmodelrelationsss.cpp
+    listmodelrelationsss.cpp \
+    listmodelgraph.cpp \
+    algorithm.cpp \
+    bipartiplegraph.cpp \
+    modelgraph.cpp
 
 RESOURCES += \
     mdp.qrc
@@ -24,7 +28,11 @@ HEADERS += \
     handlersignals.h \
     listmodeljobs.h \
     listmodelworkers.h \
-    listmodelrelationsss.h
+    listmodelrelationsss.h \
+    listmodelgraph.h \
+    algorithm.h \
+    bipartiplegraph.h \
+    modelgraph.h
 
 DISTFILES += \
     Database/database.sqlite
