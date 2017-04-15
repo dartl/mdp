@@ -8,8 +8,10 @@ SOURCES += main.cpp \
     listmodeljobs.cpp \
     listmodelworkers.cpp \
     listmodelrelationsss.cpp \
+    listmodelgraph.cpp \
     algorithm.cpp \
-    bipartiplegraph.cpp
+    bipartiplegraph.cpp \
+    modelgraph.cpp
 
 RESOURCES += \
     mdp.qrc
@@ -27,8 +29,10 @@ HEADERS += \
     listmodeljobs.h \
     listmodelworkers.h \
     listmodelrelationsss.h \
+    listmodelgraph.h \
     algorithm.h \
-    bipartiplegraph.h
+    bipartiplegraph.h \
+    modelgraph.h
 
 DISTFILES += \
     Database/database.sqlite

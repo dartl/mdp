@@ -5,6 +5,7 @@
 #include "listmodeljobs.h"
 #include "listmodelworkers.h"
 #include "listmodelrelationsss.h"
+#include "modelgraph.h"
 #include <vector>
 #include <string>
 #include <QDebug>
@@ -30,17 +31,16 @@ public:
     void setGraph(BipartiteGraph<int>* graph)  { this->graph = graph;}
     BipartiteGraph<int>* getGraph(){ return this->graph; }
 
-    void PrintVertixs();
-    void PrintPairs();
+    QList<ModelGraph *> *getGraphConvert();
 
-
-signals:
-    void existingNode();
-
-public slots:
     void addLeftNodeGraph(QString title);
     void addRightPartGraph();
 
+    void PrintVertixs();
+    void PrintPairs();
+
+signals:
+    void existingNode();
 
 };
 

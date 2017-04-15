@@ -1,21 +1,26 @@
 <RCC>
     <qresource prefix="/">
-        <file>images/icon-back.png</file>
-        <file>images/icon-settings.png</file>
         <file>fonts/LICENSE.txt</file>
         <file>fonts/OpenSans-Regular.ttf</file>
         <file>images/icon-open-menu.png</file>
         <file>images/icon-create-menu.png</file>
         <file>images/icon-save-menu.png</file>
-        <file>images/icon-addNode-addArea.png</file>
         <file>qml/main.qml</file>
         <file>images/icon-menu.png</file>
         <file>images/icon-more-vert.png</file>
-        <file>images/icon-search-spec.png</file>
         <file>images/icon-save-as.png</file>
         <file>images/icon-exit-menu.png</file>
         <file>qml/AdditionArea.qml</file>
         <file>qml/LoadIndicator.qml</file>
         <file>images/icon-search-add.png</file>
+        <file>qml/Graph.qml</file>
+        <file>images/icon-add-node.png</file>
+        <file>images/icon-delete-node.png</file>
+        <file>images/icon-search-spec.png</file>
+        <file>images/ic-add-node.png</file>
+        <file>images/ic-more-vert.png</file>
+        <file>images/ic-menu.png</file>
+        <file>images/ic-delete-node.png</file>
+        <file>images/ic-search-spec.png</file>
     </qresource>
 </RCC>

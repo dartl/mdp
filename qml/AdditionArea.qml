@@ -2,6 +2,7 @@ import QtQuick 2.6
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.0
+
 Pane {
     id: additionArea
 
@@ -11,87 +12,78 @@ Pane {
         var text_specialties = "";
         for (var i = 0; i < db_model_relations.columnCount(); ++i) {
             if (db_model_relations.getIdSpecialist(i) === id) {
-                text_specialties += db_model_jobs.getTitle(db_model_jobs.getIndexById(db_model_relations.getIdSpecialty(i)));
+                text_specialties +=
+                        db_model_jobs.getTitle(db_model_jobs.getIndexById(db_model_relations.getIdSpecialty(i)));
                 text_specialties += "\n";
             }
         }
         return text_specialties;
     }
 
-    ColumnLayout {
-        spacing: 40
+    Graph {
         anchors.fill: parent
-
-        Label {
-
-            width: parent.width
-            wrapMode: Label.Wrap
-            Layout.alignment:  Qt.AlignHCenter
-            text: "BusyIndicator is used to indicate activity while content is being loaded,"
-                  + " or when the UI is blocked waiting for a resource to become available."
-        }
     }
 
-//    Drawer {
-//        id: showJobs
-//        edge: Qt.RightEdge
-//        width: Math.min(mainWindow.width, mainWindow.height) / 3 * 2
-//        height: mainWindow.height
-//        dragMargin: 10
+    Drawer {
+        id: showJobs
+        edge: Qt.RightEdge
+        width: Math.min(mainWindow.width, mainWindow.height) / 3 * 2
+        height: mainWindow.height
+        dragMargin: 10
 
-//        Pane {
-//            id: paneSearch
-//            focus: true
+        Pane {
+            id: paneSearch
+            focus: true
 
-//            TextField {
-//                id: lifeSearch
-//                focus: true
-//                width: showJobs.width - Math.min(imgSearch.width,imgSearch.height) - 20
-//                placeholderText: "Введите специальность"
-//                onTextChanged: db_model_jobs_filter.setFilterFixedString(text)
-//            }
+            TextField {
+                id: lifeSearch
+                focus: true
+                width: showJobs.width - Math.min(imgSearch.width,imgSearch.height) - 20
+                placeholderText: "Введите специальность"
+                onTextChanged: db_model_jobs_filter.setFilterFixedString(text)
+            }
 
-//            Image {
-//                id: imgSearch
-//                fillMode: Image.Pad
-//                anchors.left: lifeSearch.right
-//                anchors.leftMargin: 4
-//                anchors.top: parent.top
-//                anchors.topMargin: 8
-//                source: "qrc:/images/icon-search-add.png"
-//                horizontalAlignment: Image.AlignHCenter
-//                verticalAlignment: Image.AlignVCenter
-//            }
-//        }
+            Image {
+                id: imgSearch
+                fillMode: Image.Pad
+                anchors.left: lifeSearch.right
+                anchors.leftMargin: 4
+                anchors.top: parent.top
+                anchors.topMargin: 8
+                source: "qrc:/images/icon-search-add.png"
+                horizontalAlignment: Image.AlignHCenter
+                verticalAlignment: Image.AlignVCenter
+            }
+        }
 
-//        ListView {
-//            id: listJobs
-//            clip: true
-//            currentIndex: -1
-//            anchors.top: paneSearch.bottom
-//            anchors.topMargin: paneSearch.height + 4
-//            anchors.bottom: parent.bottom
-//            anchors.left: parent.left
-//            anchors.right: parent.right
+        ListView {
+            id: listJobs
+            clip: true
+            currentIndex: -1
+            anchors.top: paneSearch.bottom
+            anchors.topMargin: paneSearch.height + 4
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+            anchors.right: parent.right
 
-//            delegate: ItemDelegate {
+            delegate: ItemDelegate {
 
-//                width: parent.width
-//                text: title
-//                  font.pixelSize: 20
-//                highlighted: ListView.isCurrentItem
-//                onClicked: {
+                width: parent.width
+                text: title
+                font.pixelSize: 20
+                //highlighted: ListView.isCurrentItem
+                onClicked: {
 
-//                    showJobs.close()
-//                    nav.close()
-//                }
-//            }
+                    showJobs.close()
+                    nav.close()
+                }
+            }
 
-//            model: db_model_jobs_filter
+            model: db_model_jobs_filter
 
-//            ScrollIndicator.vertical: ScrollIndicator { }
-//        }
-//    }
+            ScrollIndicator.vertical: ScrollIndicator { }
+        }
+    }
 
     Drawer {
         id: showWorks
@@ -104,11 +96,13 @@ Pane {
             anchors.fill: parent
             contentWidth: parent.width
             contentHeight: {
-                parent.height + labelText.height + labelTextfio.height + labelTextadress.height
+                (labelText.height + labelTextfio.height +
+                 labelTextadress.height + infoSex.height + infoAge.height
+                 + delimiter.height * 4 + 360) < parent.height ? parent.height :
+                    parent.height + Math.max(labelText.height,labelTextfio.height,labelTextadress.height)
             }
-
             flickableDirection: Flickable.VerticalFlick
-            clip: true
+            //clip: true
 
             Row {
                 id: infoFio
@@ -133,8 +127,8 @@ Pane {
                     wrapMode: Label.Wrap
                     font.pixelSize: 20
                     width: infoFio.width - labelTagfio.width
-                    text: "Джанис Локелани Кеиханаикукауакахихулихеекахаунаеле"
-                    //text: db_model_workers.getFIO(db_model_workers.getIndexById(1))
+                    //text: "Джанис Локелани Кеиханаикукауакахихулихеекахаунаеле"
+                    text: db_model_workers.getFIO(db_model_workers.getIndexById(1))
                 }
 
             }
@@ -251,8 +245,8 @@ Pane {
                     wrapMode: Label.Wrap
                     font.pixelSize: 20
                     width: infoAdress.width - labelTagadress.width
-                    text: "Лланвайрпуллгуингиллгогерихуирндробуллллантисилиогого"
-                    //text: db_model_workers.getAdress(db_model_workers.getIndexById(1))
+                    //text: "Лланвайрпуллгуингиллгогерихуирндробуллллантисилиогого"
+                    text: db_model_workers.getAdress(db_model_workers.getIndexById(1))
                 }
 
             }
@@ -294,8 +288,8 @@ Pane {
                     wrapMode: Label.Wrap
                     font.pixelSize: 20
                     width: parent.width - labelTag.width
-                    text: "Программист С++" + "\nМенеджер" + "Web-Программист" + "Web-Программист" + "Web-Программист" + "\nWeb-Программист"
-                    //text: getSpecialties(1)
+                    //text: "Программист С++" + "\nМенеджер" + "Web-Программист" + "Web-Программист" + "Web-Программист" + "\nWeb-Программист"
+                    text: getSpecialties(1)
                 }
 
             }

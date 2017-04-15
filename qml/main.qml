@@ -8,6 +8,9 @@ ApplicationWindow {
     signal usedMenu(int index)
     signal getIndexListJobs(string title)
     signal getIndexListWorkers(int index)
+    signal visiableDelete()
+
+
 
     visible: true
     id: mainWindow
@@ -51,18 +54,19 @@ ApplicationWindow {
                     fillMode: Image.Pad
                     horizontalAlignment: Image.AlignHCenter
                     verticalAlignment: Image.AlignVCenter
-                    source: "qrc:/images/icon-menu.png"
+                    source: "qrc:/images/ic-menu.png"
                 }
                 onClicked: nav.open()
             }
 
             ToolButton {
+                id: search_button
                 anchors.left: menu_button.right
                 contentItem: Image {
                     fillMode: Image.Pad
                     horizontalAlignment: Image.AlignHCenter
                     verticalAlignment: Image.AlignVCenter
-                    source: "qrc:/images/icon-search-spec.png"
+                    source: "qrc:/images/ic-search-spec.png"
                 }
                 onClicked: {
                             stackView.replace("qrc:/qml/LoadIndicator.qml")
@@ -73,12 +77,42 @@ ApplicationWindow {
             }
 
             ToolButton {
+                visible: false
+                id: addNode_button
+                anchors.right: additional_menu.left
+                contentItem: Image {
+                    fillMode: Image.Pad
+                    horizontalAlignment: Image.AlignHCenter
+                    verticalAlignment: Image.AlignVCenter
+                    source: "qrc:/images/ic-add-node.png"
+                }
+                onClicked: {
+                    //showJobs.open()
+                }
+            }
+
+            ToolButton {
+                visible: false
+                id: deleteNode_button
+                anchors.right: additional_menu.left
+                contentItem: Image {
+                    fillMode: Image.Pad
+                    horizontalAlignment: Image.AlignHCenter
+                    verticalAlignment: Image.AlignVCenter
+                    source: "qrc:/images/ic-delete-node.png"
+                }
+                onClicked: {
+                }
+            }
+
+            ToolButton {
+                id: additional_menu
                 anchors.right: parent.right
                 contentItem: Image {
                     fillMode: Image.Pad
                     horizontalAlignment: Image.AlignHCenter
                     verticalAlignment: Image.AlignVCenter
-                    source: "qrc:/images/icon-more-vert.png"
+                    source: "qrc:/images/ic-more-vert.png"
                 }
                 onClicked: optionsMenu.open()
 
@@ -108,7 +142,7 @@ ApplicationWindow {
         y: header.height
         width: Math.min(mainWindow.width, mainWindow.height) / 3 * 2
         height: mainWindow.height
-        dragMargin: 0
+        dragMargin: 10
 
         ListView {
             id: menuView
@@ -141,6 +175,7 @@ ApplicationWindow {
                         if (ListView.currentIndex != index) {
                             ListView.currentIndex = index
                             stackView.replace("qrc:/qml/AdditionArea.qml")
+                            addNode_button.visible = true
                         }
                     }
 
@@ -169,7 +204,6 @@ ApplicationWindow {
             id: pane
 
             Label {
-                text: "Поле добавления узлов"
                 anchors.margins: 20
                 anchors.top: parent.bottom
                 anchors.left: parent.left
@@ -178,6 +212,9 @@ ApplicationWindow {
                 horizontalAlignment: Label.AlignHCenter
                 verticalAlignment: Label.AlignVCenter
                 wrapMode: Label.Wrap
+                font.pixelSize: 30
+                color: Material.color(Material.Grey)
+                text: "Создайте новую модель или откройте существующую"
             }
         }
     }
@@ -291,6 +328,7 @@ ApplicationWindow {
             }
         }
     }
+
 }
 
 

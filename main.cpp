@@ -12,18 +12,24 @@
 #include "listmodeljobs.h"
 #include "listmodelworkers.h"
 #include "listmodelrelationsss.h"
+#include "algorithm.h"
+#include "modelgraph.h"
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QQmlApplicationEngine engine;
-    QQuickStyle::setStyle("Material");
-    QSqlDatabase mybase;
 
+
+
+    QQuickStyle::setStyle("Material");
+
+
+    QSqlDatabase mybase;
     //connect with BD
     mybase = QSqlDatabase::addDatabase("QSQLITE");
-    mybase.setDatabaseName("/home/sergey/Документы/mdp-UI/Database/database.sqlite");
+    mybase.setDatabaseName(qApp->applicationDirPath() + "/DataBase/database.sqlite");
     if (!mybase.open())
     {
         qDebug() << mybase.lastError().text();
@@ -32,6 +38,13 @@ int main(int argc, char *argv[])
     ListModelJobs* model_jobs = new ListModelJobs(mybase);
     ListModelWorkers* model_workers = new ListModelWorkers(mybase);
     ListModelRelationsSS* model_relations = new ListModelRelationsSS(mybase);
+
+    /////////
+//    Algorithm* algorithm = new Algorithm(model_jobs, model_workers, model_relations);
+//    algorithm->a
+    /////////
+
+    qmlRegisterType<ModelGraph>("ModelGraph",1,0,"ModelGraph");
 
     QSortFilterProxyModel* proxy = new QSortFilterProxyModel();
     proxy->setSourceModel(model_jobs);
