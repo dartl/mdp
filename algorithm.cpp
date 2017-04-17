@@ -17,6 +17,39 @@ Algorithm::~Algorithm()
         delete graph;
 }
 
+QList<ModelGraph *> *Algorithm::getGraphConvert()
+{
+    QList<ModelGraph* >* tempList = new QList<ModelGraph* >();
+    ModelGraph* tempModel = new ModelGraph();
+
+    for (BipartiteGraph<int>::IteratorVertixs i = (*graph).beginVertixs(); i != (*graph).endVertixs(); ++i)
+    {
+        if ((*i).isCheck())
+        {
+            bool nodeInPair = false;
+            for (BipartiteGraph<int>::IteratorPairs p = (*graph).beginPairs(); p != (*graph).endPairs(); ++p)
+            {
+                if ((*p).getFisrt().getData() == (*i).getData())
+                {
+
+                    tempModel->setIdJob((*p).getFisrt().getData());
+                    tempModel->setIdWorker((*p).getSecond().getData());
+                    nodeInPair = true;
+                }
+            }
+            if (!nodeInPair)
+            {
+
+                tempModel->setIdJob((*i).getData());
+                tempModel->setIdWorker(-1);
+            }
+            tempList->append(tempModel);
+        }
+    }
+
+    return tempList;
+}
+
 void Algorithm::PrintVertixs()
 {
     qDebug() << "List all vertixs:";

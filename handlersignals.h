@@ -13,8 +13,12 @@ public:
 
 signals:
     void exit();
+
 public slots:
     void menu(const int index);
+
+private:
+
 };
 
 #endif // HANDLERSIGNALS_H
