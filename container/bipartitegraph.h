@@ -114,7 +114,7 @@ namespace bpg {
             try {
                 if(vertexPos != vertixs.end())
                 {
-                  THROW_TYPE_OBJECT_EXISTS("Vertex already exist!");
+                  THROW_TYPE_OBJECT_EXISTS("Vertex already exist");
                   return;
                 } else {
                     auto newNode = allocator.allocateVertix(n);
@@ -133,7 +133,7 @@ namespace bpg {
             try {
                 if(vertexPos != vertixs.end())
                 {
-                  THROW_TYPE_OBJECT_EXISTS("Vertex already exist!");
+                  THROW_TYPE_OBJECT_EXISTS("Vertex already exist");
                   return;
                 } else {
                     auto newNode = allocator.allocateVertix(n,c);
@@ -144,17 +144,35 @@ namespace bpg {
             }
         }
         void popFrontVertix() {
-            removeVertixNodeByObject(vertixs.front());
+            try {
+                if(vertixs.size() == 0)
+                {
+                  THROW_TYPE_NULL_POINTER("List already empty");
+                } else {
+                  removeVertixNodeByObject(vertixs.front());
+                }
+            } catch(Exception e) {
+                std::cerr << e.printE();
+            }
         }
         void popBackVertix() {
-            removeVertixNodeByObject(vertixs.back());
+            try {
+                if(vertixs.size() == 0)
+                {
+                  THROW_TYPE_NULL_POINTER("List already empty");
+                } else {
+                  removeVertixNodeByObject(vertixs.back());
+                }
+            } catch(Exception e) {
+                std::cerr << e.printE();
+            }
         }
 
         // Проверяет, принадлежит ли узел к графу
         bool checkVertix(Node<Type>* vertix) {
             IteratorVertixs v = beginVertixs();
             for(; v != endVertixs(); ++v){
-                Node<Type>* temp = *(v.getCurrent());
+                Node<Type>* temp = *v;
                 if (vertix == temp) {
                     return true;
                 }
@@ -223,20 +241,30 @@ namespace bpg {
 
         // Удалить вершину и все связанные ребра по Type
         void removeVertixNodeByObject(Type t){
+            bool check = false;
             IteratorVertixs v = beginVertixs();
             for(; v != endVertixs(); v++) {
                 Node<Type>* temp =*v;
                 if (temp->getData() == t) {
+                    check = true;
                     break;
                 }
             }
-            std::list<PairNode<Type>*> list_remove = getPairsList(v->getData());
-            for (std::list<PairNode<Type>*>::iterator it=list_remove.begin(); it != list_remove.end(); ++it) {
-                allocator.deletePair(*it);
-                pairs.remove(*it);
+            try {
+                if (check) {
+                    std::list<PairNode<Type>*> list_remove = getPairsList(v->getData());
+                    for (std::list<PairNode<Type>*>::iterator it=list_remove.begin(); it != list_remove.end(); ++it) {
+                        allocator.deletePair(*it);
+                        pairs.remove(*it);
+                    }
+                    allocator.deleteVertix(*v);
+                    vertixs.remove(*v);
+                } else {
+                    THROW_TYPE_NODE_NOT_FOUND("Such an object was not found in the list");
+                }
+            } catch(Exception e) {
+                std::cerr << e.printE();
             }
-            allocator.deleteVertix(*v);
-            vertixs.remove(*v);
         }
 
         // Метод, удаляющий все True вершины
@@ -363,27 +391,57 @@ namespace bpg {
               return i->getFisrt()->getData() == f->getData() && i->getSecond()->getData() == s->getData();
             });
 
-            if(vertexPos != pairs.end())
-            {
-              std::cout << "Pairs already exist!";
-              return;
+            try {
+                if(vertexPos != pairs.end())
+                {
+                  THROW_TYPE_OBJECT_EXISTS("Pairs already exist!");
+                  return;
+                }
+                auto newPairs = allocator.allocatePairNode(*f,*s);
+                pairs.push_back(newPairs);
+            } catch(Exception e) {
+                std::cerr << e.printE();
             }
-
-            auto newPairs = allocator.allocatePairNode(*f,*s);
-            pairs.push_back(newPairs);
         }
         void popFrontPair() {
-            pairs.pop_front();
+            try {
+                if(pairs.size == 0)
+                {
+                  THROW_TYPE_NULL_POINTER("List pairs already empty");
+                  return;
+                }
+                pairs.pop_front();
+            } catch(Exception e) {
+                std::cerr << e.printE();
+            }
         }
         void popBackPair() {
-            pairs.pop_back();
-        }
-        PairNode<Type>& getPairNode(int n){
-            IteratorPairs v = beginPairs();
-            for(int i = 0; i < n;i++){
-                ++v;
+            try {
+                if(pairs.size == 0)
+                {
+                  THROW_TYPE_NULL_POINTER("List pairs already empty");
+                  return;
+                }
+                pairs.pop_back();
+            } catch(Exception e) {
+                std::cerr << e.printE();
             }
-            return *v;
+        }
+        PairNode<Type>* getPairNode(int n){
+            try {
+                if(pairs.size < n)
+                {
+                  THROW_TYPE_INDEX_OUT_OF_BOUNDS("The index is not included in the list dimensions");
+                  return;
+                }
+                IteratorPairs v = beginPairs();
+                for(int i = 0; i < n;i++){
+                    ++v;
+                }
+                return *v;
+            } catch(Exception e) {
+                std::cerr << e.printE();
+            }
         }
         int findPairNode(Node<Type>* t){
             int result = -1, i = 0;
@@ -397,12 +455,22 @@ namespace bpg {
             }
             return result;
         }
+
         void removePairNode(int n){
-            IteratorPairs v = beginPairs();
-            for(int i = 0; i < n;i++){
-                ++v;
+            try {
+                if(pairs.size() < n)
+                {
+                  THROW_TYPE_INDEX_OUT_OF_BOUNDS("The index is not included in the list dimensions");
+                  return;
+                }
+                IteratorPairs v = beginPairs();
+                for(int i = 0; i < n;i++){
+                    ++v;
+                }
+                pairs.erase(v.getCurrent());
+            } catch(Exception e) {
+                std::cerr << e.printE();
             }
-            pairs.erase(v.getCurrent());
         }
 
         /* Итератор для списка вершин */
