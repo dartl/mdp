@@ -147,9 +147,9 @@ namespace bpg {
             try {
                 if(vertixs.size() == 0)
                 {
-                  THROW_TYPE_NULL_POINTER("List already empty");
+                    THROW_TYPE_NULL_POINTER("List already empty");
                 } else {
-                  removeVertixNodeByObject(vertixs.front());
+                    removeVertixNode(vertixs.front());
                 }
             } catch(Exception e) {
                 std::cerr << e.printE();
@@ -161,7 +161,7 @@ namespace bpg {
                 {
                   THROW_TYPE_NULL_POINTER("List already empty");
                 } else {
-                  removeVertixNodeByObject(vertixs.back());
+                  removeVertixNode(vertixs.back());
                 }
             } catch(Exception e) {
                 std::cerr << e.printE();
@@ -182,7 +182,7 @@ namespace bpg {
 
         Node<Type>* getVertixNodeByNumber(int n){
             try {
-                if (n <= vertixs.size()) {
+                if (n < vertixs.size()) {
                     IteratorVertixs v = beginVertixs();
                     for(int i = 0; i < n;i++){
                         ++v;
@@ -224,7 +224,7 @@ namespace bpg {
                     for(int i = 0; i < n;i++){
                         ++v;
                     }
-                    std::list<PairNode<Type>*> list_remove = getPairsList(v->getData());
+                    std::list<PairNode<Type>*> list_remove = getPairsList(*v);
                     for (std::list<PairNode<Type>*>::iterator it=list_remove.begin(); it != list_remove.end(); ++it) {
                         allocator.deletePair(*it);
                         pairs.remove(*it);
@@ -252,13 +252,32 @@ namespace bpg {
             }
             try {
                 if (check) {
-                    std::list<PairNode<Type>*> list_remove = getPairsList(v->getData());
+                    std::list<PairNode<Type>*> list_remove = getPairsList(*v);
                     for (std::list<PairNode<Type>*>::iterator it=list_remove.begin(); it != list_remove.end(); ++it) {
                         allocator.deletePair(*it);
                         pairs.remove(*it);
                     }
                     allocator.deleteVertix(*v);
                     vertixs.remove(*v);
+                } else {
+                    THROW_TYPE_NODE_NOT_FOUND("Such an object was not found in the list");
+                }
+            } catch(Exception e) {
+                std::cerr << e.printE();
+            }
+        }
+
+        // Удалить вершину и все связанные ребра по Node
+        void removeVertixNode(Node<Type>* t){
+            try {
+                if (checkVertix(t)) {
+                    std::list<PairNode<Type>*> list_remove = getPairsList(t);
+                    for (std::list<PairNode<Type>*>::iterator it=list_remove.begin(); it != list_remove.end(); ++it) {
+                        allocator.deletePair(*it);
+                        pairs.remove(*it);
+                    }
+                    allocator.deleteVertix(t);
+                    vertixs.remove(t);
                 } else {
                     THROW_TYPE_NODE_NOT_FOUND("Such an object was not found in the list");
                 }
@@ -302,12 +321,12 @@ namespace bpg {
         }
 
         // Метод, возвращающий список ребер выбранной вершины
-        std::list<PairNode<Type>*> getPairsList(Type t){
+        std::list<PairNode<Type>*> getPairsList(Node<Type>* t){
             std::list<PairNode<Type>*> pairs;
             IteratorPairs v = beginPairs();
             for(; v != endPairs(); v++) {
                 PairNode<Type>* temp =*v;
-                if (temp->getFisrt()->getData() == t || temp->getSecond()->getData() == t) {
+                if (temp->getFisrt()->getData() == t->getData() || temp->getSecond()->getData() == t->getData()) {
                     pairs.push_back(temp);
                 }
             }
@@ -405,7 +424,7 @@ namespace bpg {
         }
         void popFrontPair() {
             try {
-                if(pairs.size == 0)
+                if(pairs.size() == 0)
                 {
                   THROW_TYPE_NULL_POINTER("List pairs already empty");
                   return;
@@ -417,7 +436,7 @@ namespace bpg {
         }
         void popBackPair() {
             try {
-                if(pairs.size == 0)
+                if(pairs.size() == 0)
                 {
                   THROW_TYPE_NULL_POINTER("List pairs already empty");
                   return;
@@ -558,6 +577,12 @@ namespace bpg {
                 find = findPairNode(*v);
             }
             vertixs.erase(v.getCurrent());
+        }
+
+        void clearGraph() {
+            while(vertixs.size() > 0){
+                popFrontVertix();
+            }
         }
 
 private:
