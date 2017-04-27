@@ -108,6 +108,18 @@ namespace bpg {
         std::list<PairNode<Type>*> pairs;    // список ребер графа
     public:
         BipartiteGraph() {}
+        /* Инвариант проверки, что граф двудольный */
+        bool invariantBigraph() {
+            IteratorPairs ip = beginPairs();
+            while (ip != endPairs()) {
+                PairNode<Type>* pn = *ip;
+                if (pn->getFisrt()->isCheck() == pn->getSecond()->isCheck()) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         /* Операции с вершинами */
         void addVertix(Type n){
             auto vertexPos = std::find_if(vertixs.begin(), vertixs.end(), [n](Node<Type>* i)
@@ -750,7 +762,6 @@ private:
             std::list<Node<Type>*> vertexes_pool;
             std::list<PairNode<Type>*> pairs_pool;
         };
-
 
 
 private:
