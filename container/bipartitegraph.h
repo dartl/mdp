@@ -5,6 +5,8 @@
 #include <exception>
 #include <string>
 #include <vector>
+// ofstream constructor.
+#include <fstream>
 
 
 namespace bpg {
@@ -43,17 +45,18 @@ namespace bpg {
 
         friend std::ostream& operator<<(std::ostream& out, Node<Type>* dt)
         {
-            out << dt->getData();
+            out << dt->getData() << "\n";
+            out << dt->isCheck();
             return out;
         }
         bool operator==(const Node<Type>& other)
         {
-            return this->data ==
+            return data ==
                     other.getData();
         }
         bool operator!=(const Node<Type>& other)
         {
-            return !(this->data ==
+            return !(data ==
                      other.getData());
         }
     };
@@ -585,6 +588,104 @@ namespace bpg {
             }
         }
 
+        void Serialize(std::string filename) {
+            std::ofstream fout;
+            fout.open(filename, std::ofstream::binary); // связываем объект с файлом
+
+            if (fout.is_open()) {
+                fout << vertixs.size() << "\n";
+                fout << pairs.size() << "\n";
+                std::for_each (vertixs.begin(), vertixs.end(), [&fout](Node<Type>* i) {
+                    fout << i << "\n";
+                });
+
+                std::for_each (pairs.begin(), pairs.end(), [&fout](PairNode<Type>* i) {
+                    fout << i->getFisrt() << "\n";
+                    fout << i->getSecond() << "\n";
+                });
+                fout.flush();
+                fout.close();
+            } else {
+                std::cout << "Error open file";
+            }
+        }
+
+        void Deserialize(std::string filename) {
+            std::ifstream fin(filename, std::ofstream::in);
+            size_t sizeV, sizeP;
+            fin >> sizeV;
+            fin >> sizeP;
+            Type data;
+            bool check;
+            for (int  i = 0; i < sizeV; i++) {
+                fin >> data;
+                fin >> check;
+                auto newNode = allocator.allocateVertix(data,check);
+                vertixs.push_back(newNode);
+            }
+            Type first_data, second_data;
+            for (int  i = 0; i < sizeP; i++) {
+                fin >> first_data;
+                fin >> check;
+                fin >> second_data;
+                fin >> check;
+                auto pairNode = allocator.allocatePairNode(*getVertixNode(first_data),
+                                                           *getVertixNode(second_data));
+                pairs.push_back(pairNode);
+            }
+            std::cout << sizeV << endl;
+            std::cout << sizeP << endl;
+        }
+
+        friend std::ostream& operator<<(std::ostream& out, BipartiteGraph<Type>& dt)
+        {
+            out << dt.vertixs.size() << endl;
+            out << dt.pairs.size()<< endl;
+            out << "Vertixs:"<< endl;
+            std::for_each (dt.vertixs.begin(), dt.vertixs.end(), [&out](Node<Type>* i) {
+                out << i<< endl;
+            });
+            out << "Pairs:"<< endl;
+            std::for_each (dt.pairs.begin(), dt.pairs.end(), [&out](PairNode<Type>* i) {
+                out << i->getFisrt()<< endl;
+                out << i->getSecond()<< endl;
+            });
+            return out;
+        }
+
+        friend std::istream& operator>> ( std::istream& is, BipartiteGraph<Type>& dt )
+        {
+            int sizeV, sizeP;
+            is >> sizeV;
+            is >> sizeP;
+            Node<Type> node;
+            for(int i = 0; i < sizeP; i++) {
+                is >> node;
+            }
+
+            for(int i = 0; i < sizeP; i++) {
+                is >> node;
+            }
+            std::for_each (dt.pairs.begin(), dt.pairs.end(), [&out](PairNode<Type>* i) {
+                out << i->getFisrt();
+                out << i->getSecond();
+            });
+            return is;
+        }
+
+/*
+        std::ostream &graphToString(std::ostream &stream)
+        {
+            stream << "All vertixs:";
+            IteratorVertixs v = beginVertixs();
+            while (v!=endVertixs()) {
+                stream << (*v);
+                stream << "; ";
+                v++;
+            }
+            return stream;
+        }
+*/
 private:
         class Allocator {
         public:
@@ -649,6 +750,8 @@ private:
             std::list<Node<Type>*> vertexes_pool;
             std::list<PairNode<Type>*> pairs_pool;
         };
+
+
 
 private:
         Allocator allocator;
