@@ -24,7 +24,17 @@ void ListModelGraph::update()
 {
     this->m_graph = ListModelGraph::m_algorithm->getGraphConvert();
 
+    //console output
+    foreach (ModelGraph* it, *m_graph) {
+        qDebug() << it->idJob() << " " << it->idWorker();
+    }
+
     emit dataChanged();
+}
+
+int ListModelGraph::count()
+{
+    return m_graph->count();
 }
 
 void ListModelGraph::appendData(QQmlListProperty<ModelGraph> *list, ModelGraph *value)

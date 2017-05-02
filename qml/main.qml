@@ -6,11 +6,10 @@ import Qt.labs.settings 1.0
 
 ApplicationWindow {
     signal usedMenu(int index)
+
+    //???????
     signal getIndexListJobs(string title)
     signal getIndexListWorkers(int index)
-    signal visiableDelete()
-
-
 
     visible: true
     id: mainWindow
@@ -23,10 +22,12 @@ ApplicationWindow {
     Material.accent: Material.BlueGrey
     Material.primary: Material.BlueGrey
 
+    //timer for delay simulator
     Timer {
         id:timer
     }
 
+    //delay simulator for LoadIndicator.qml
     function delay(delayTime, cb) {
         timer.interval = delayTime;
         timer.repeat = false;
@@ -34,12 +35,55 @@ ApplicationWindow {
         timer.start();
     }
 
+    //add slots for Graph.qml
+    function onActiveAddArea() {
+//        if (stackView.depth !== 0) {
+//            if (stackView.currentItem.graph.editingMode) {
+//                dialogEditingMode.open()
+//                stackView.currentItem.graph.editingMode = false;
+//            }
+//        }
+
+        stackView.replace(addArea);
+        if (!addNode_button.visible)
+            addNode_button.visible = true;
+
+        if (!search_button.visible)
+            search_button.visible = true;
+
+        stackView.currentItem.graph.activeDeleteMode.connect(onActiveDeleteMode);
+        stackView.currentItem.graph.inActiveDeleteMode.connect(onInActiveDeleteMode);
+        //graph.update()
+    }
+
+    //mode in Graph.qml
+    function onActiveDeleteMode() {
+        if (!stackView.currentItem.graph.deleteMode) {
+            deleteNode_button.visible = true;
+            addNode_button.anchors.right = deleteNode_button.left;
+            stackView.currentItem.graph.deleteMode = true;
+        }
+
+        console.log("ActiveDeleteMode")
+    }
+
+    //mode in Graph.qml
+    function onInActiveDeleteMode() {
+        if (stackView.currentItem.graph.deleteMode) {
+            deleteNode_button.visible = false;
+            addNode_button.anchors.right = additional_menu.left;
+            stackView.currentItem.graph.deleteMode = false;
+        }
+
+        console.log("InActiveDeleteMode")
+    }
 
     header: ToolBar {
         Material.foreground: "white"
         id: toolbar
 
         RowLayout {
+            id: layout
             spacing: 0
             anchors.fill: parent
 
@@ -56,6 +100,7 @@ ApplicationWindow {
 
             ToolButton {
                 id: search_button
+                visible: false
                 anchors.left: menu_button.right
                 contentItem: Image {
                     fillMode: Image.Pad
@@ -64,16 +109,30 @@ ApplicationWindow {
                     source: "qrc:/images/ic-search-spec.png"
                 }
                 onClicked: {
-                            stackView.replace("qrc:/qml/LoadIndicator.qml")
-                            delay(1000, function() {
-                               stackView.replace("qrc:/qml/AdditionArea.qml")
-                           })
+                            if (stackView.currentItem.existNodeMode) {
+                                stackView.push(loadIndicator)
+                                delay(1000, function() {
+                                    stackView.pop()
+                                    stackView.currentItem.existNodeMode = false
+                               })
+                            }
+
+
+                }
+
+                ToolTip {
+                    parent: search_button
+                    leftMargin: mainWindow.width / 2 - width / 2
+                    topMargin: mainWindow.height - height * 2
+                    visible:  search_button.pressed && !stackView.currentItem.existNodeMode
+                    text: "Нечего искать!"
+                    timeout: 5000
                 }
             }
 
             ToolButton {
-                visible: false
                 id: addNode_button
+                visible: false
                 anchors.right: additional_menu.left
                 contentItem: Image {
                     fillMode: Image.Pad
@@ -82,13 +141,14 @@ ApplicationWindow {
                     source: "qrc:/images/ic-add-node.png"
                 }
                 onClicked: {
-                    //showJobs.open()
+                    stackView.currentItem.drawer_showJobs.open()
+                    stackView.currentItem.graph.editingMode = true
                 }
             }
 
             ToolButton {
-                visible: false
                 id: deleteNode_button
+                visible: false
                 anchors.right: additional_menu.left
                 contentItem: Image {
                     fillMode: Image.Pad
@@ -160,19 +220,30 @@ ApplicationWindow {
 
                     Label {
                         text: model.title
+                        font.pixelSize: 20
                         Layout.fillWidth: true
                     }
                 }
 
                 highlighted: ListView.isCurrentItem
                 onClicked: {
-                    if (index === 0) {
+                    switch(index) {
+                    case 0:
                         if (ListView.currentIndex != index) {
                             ListView.currentIndex = index
-                            stackView.replace("qrc:/qml/AdditionArea.qml")
-                            addNode_button.visible = true
+                            onActiveAddArea()
                         }
+                        break;
+                    case 1:
+                        if (ListView.currentIndex != index) {
+                            ListView.currentIndex = index
+                            onActiveAddArea()
+                            stackView.currentItem.graph.editingMode = true
+                            stackView.currentItem.graph.searchRightNodes = true
+                        }
+                        break;
                     }
+
 
                     usedMenu(index)
                     nav.close()
@@ -195,7 +266,12 @@ ApplicationWindow {
         id: stackView
         anchors.fill: parent
 
-        initialItem: Pane {
+        initialItem: initialPane
+    }
+
+    Component {
+        id: initialPane
+        Pane {
             id: pane
 
             Label {
@@ -214,6 +290,20 @@ ApplicationWindow {
         }
     }
 
+    Component {
+        id: addArea
+
+        AdditionArea {
+            pointer_mainWindow: mainWindow
+        }
+    }
+
+    Component {
+        id: loadIndicator
+
+        LoadIndicator {
+        }
+    }
 
     Popup {
         id: settingsPopup
@@ -324,4 +414,59 @@ ApplicationWindow {
         }
     }
 
+    Popup {
+        id: dialogEditingMode
+        x: (mainWindow.width - width) / 2
+        y: mainWindow.height / 6
+        width: Math.min(mainWindow.width, mainWindow.height) / 3 * 2
+        height: columnInfo.implicitHeight + topPadding + bottomPadding
+        modal: true
+        focus: true
+
+        contentItem: ColumnLayout {
+            id: columnInfo
+            spacing: 20
+            Label {
+                text: "Сохранить текущую модель?"
+                font.pixelSize: 20
+                anchors.top: parent.top
+                anchors.topMargin: 10
+                anchors.horizontalCenter: parent.horizontalCenter
+
+                color: Material.color(Material.BlueGrey)
+            }
+
+            RowLayout {
+                spacing: 10
+
+                Button {
+                    id: okButton2
+                    text: "Да"
+                    onClicked: {
+                        dialogEditingMode.close()
+                        //open SAVE_WINDOW_IN_WINDOWS OR SIGNAL
+                    }
+
+                    Material.foreground: Material.Red
+                    Material.background: "transparent"
+                    Material.elevation: 0
+
+                    Layout.fillWidth: true
+                }
+
+                Button {
+                    id: cancelButton2
+                    text: "Отмена"
+                    onClicked: {
+                        dialogEditingMode.close()
+                    }
+
+                    Material.background: "transparent"
+                    Material.elevation: 0
+
+                    Layout.fillWidth: true
+                }
+            }
+        }
+    }
 }

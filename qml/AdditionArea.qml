@@ -6,7 +6,21 @@ import QtQuick.Controls.Material 2.0
 Pane {
     id: additionArea
 
-    property real indexDeleteNode: -1
+    //link to main.qml
+    property var pointer_mainWindow: null
+
+    //links to Components
+    property alias drawer_showJobs: showJobs
+    property alias drawer_showWorks: showWorks
+    property alias graph: graph
+
+    property int indexInfoWorker: -1
+
+    //program state tracking mode
+    property bool existNodeMode: false
+
+    //signals for update Graph
+    signal updateLeftNodesGraph(int index)
 
     function getSpecialties(id) {
         var text_specialties = "";
@@ -21,15 +35,18 @@ Pane {
     }
 
     Graph {
+        id: graph
         anchors.fill: parent
+        mainWindow: pointer_mainWindow
+        addArea: additionArea
     }
 
     Drawer {
         id: showJobs
         edge: Qt.RightEdge
-        width: Math.min(mainWindow.width, mainWindow.height) / 3 * 2
-        height: mainWindow.height
-        dragMargin: 10
+        width: Math.min(pointer_mainWindow.width, pointer_mainWindow.height) / 3 * 2
+        height: pointer_mainWindow.height
+        dragMargin: 0
 
         Pane {
             id: paneSearch
@@ -67,15 +84,36 @@ Pane {
             anchors.right: parent.right
 
             delegate: ItemDelegate {
-
+                property bool existNode: false
+                id: item
                 width: parent.width
                 text: title
                 font.pixelSize: 20
-                //highlighted: ListView.isCurrentItem
                 onClicked: {
+                    if (!graph.editingMode)
+                        graph.editingMode = true
 
-                    showJobs.close()
-                    nav.close()
+                    var oldCountGraph = graph.thisGraph.count()
+
+                    updateLeftNodesGraph.connect(graph.onUpdateLeftNodesGraph)
+                    updateLeftNodesGraph(index)
+
+                    updateLeftNodesGraph.disconnect(graph.onUpdateLeftNodesGraph)
+
+                    if (oldCountGraph !== graph.thisGraph.count()) {
+                        existNode = true
+                        existNodeMode = true
+                        showJobs.close()
+                    }
+                }
+
+                ToolTip {
+                    parent: item
+                    leftMargin: pointer_mainWindow.width / 2 - width / 2
+                    topMargin: pointer_mainWindow.height - height * 2
+                    visible: item.pressed && existNode
+                    text: "Такая специльность уже добавлена"
+                    timeout: 5000
                 }
             }
 
@@ -88,9 +126,9 @@ Pane {
     Drawer {
         id: showWorks
         edge: Qt.RightEdge
-        width: Math.min(mainWindow.width, mainWindow.height) / 3 * 2
-        height: mainWindow.height
-        dragMargin: 10
+        width: Math.min(pointer_mainWindow.width, pointer_mainWindow.height) / 3 * 2
+        height: pointer_mainWindow.height
+        dragMargin: 0
         Flickable {
             id: fullInfo
             anchors.fill: parent
@@ -102,7 +140,6 @@ Pane {
                     parent.height + Math.max(labelText.height,labelTextfio.height,labelTextadress.height)
             }
             flickableDirection: Flickable.VerticalFlick
-            //clip: true
 
             Row {
                 id: infoFio
@@ -128,7 +165,7 @@ Pane {
                     font.pixelSize: 20
                     width: infoFio.width - labelTagfio.width
                     //text: "Джанис Локелани Кеиханаикукауакахихулихеекахаунаеле"
-                    text: db_model_workers.getFIO(db_model_workers.getIndexById(1))
+                    text: db_model_workers.getFIO(db_model_workers.getIndexById(indexInfoWorker))
                 }
 
             }
@@ -166,7 +203,7 @@ Pane {
                 Label {
                     wrapMode: Label.Wrap
                     font.pixelSize: 20
-                    text: db_model_workers.getSex(db_model_workers.getIndexById(1))
+                    text: db_model_workers.getSex(db_model_workers.getIndexById(indexInfoWorker))
                 }
 
             }
@@ -204,7 +241,7 @@ Pane {
                 Label {
                     wrapMode: Label.Wrap
                     font.pixelSize: 20
-                    text: db_model_workers.getAge(db_model_workers.getIndexById(1))
+                    text: db_model_workers.getAge(db_model_workers.getIndexById(indexInfoWorker))
                 }
 
             }
@@ -246,7 +283,7 @@ Pane {
                     font.pixelSize: 20
                     width: infoAdress.width - labelTagadress.width
                     //text: "Лланвайрпуллгуингиллгогерихуирндробуллллантисилиогого"
-                    text: db_model_workers.getAdress(db_model_workers.getIndexById(1))
+                    text: db_model_workers.getAdress(db_model_workers.getIndexById(indexInfoWorker))
                 }
 
             }
@@ -289,7 +326,7 @@ Pane {
                     font.pixelSize: 20
                     width: parent.width - labelTag.width
                     //text: "Программист С++" + "\nМенеджер" + "Web-Программист" + "Web-Программист" + "Web-Программист" + "\nWeb-Программист"
-                    text: getSpecialties(1)
+                    text: getSpecialties(indexInfoWorker)
                 }
 
             }

@@ -24,6 +24,7 @@ public:
 
 
     Q_INVOKABLE void update();
+    Q_INVOKABLE int count();
 
 signals:
     void dataChanged();
