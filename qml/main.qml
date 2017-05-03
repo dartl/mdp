@@ -238,21 +238,25 @@ ApplicationWindow {
                     case 0:
                         if (ListView.currentIndex != index) {
                             ListView.currentIndex = index
+                            usedMenu(0)
                             onActiveAddArea()
+
                         }
                         break;
                     case 1:
                         if (ListView.currentIndex != index) {
                             ListView.currentIndex = index
+                            usedMenu(1)
                             onActiveAddArea()
                             stackView.currentItem.graph.editingMode = true
                             stackView.currentItem.graph.searchRightNodes = true
+                            stackView.currentItem.graph.thisGraph.update()
+
+
                         }
                         break;
                     }
-
-
-                    usedMenu(index)
+                    //usedMenu(index)
                     nav.close()
                 }
             }

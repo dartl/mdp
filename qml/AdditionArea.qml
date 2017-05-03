@@ -53,7 +53,7 @@ Pane {
             focus: true
 
             TextField {
-                id: lifeSearch
+                id: liveSearch
                 focus: true
                 width: showJobs.width - Math.min(imgSearch.width,imgSearch.height) - 20
                 placeholderText: "Введите специальность"
@@ -63,7 +63,7 @@ Pane {
             Image {
                 id: imgSearch
                 fillMode: Image.Pad
-                anchors.left: lifeSearch.right
+                anchors.left: liveSearch.right
                 anchors.leftMargin: 4
                 anchors.top: parent.top
                 anchors.topMargin: 8
@@ -93,6 +93,7 @@ Pane {
                     if (!graph.editingMode)
                         graph.editingMode = true
 
+                    //bug#8 замена index на index из model_job
                     updateLeftNodesGraph.connect(graph.onUpdateLeftNodesGraph)
                     updateLeftNodesGraph(index)
 

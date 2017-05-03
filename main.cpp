@@ -39,18 +39,20 @@ int main(int argc, char *argv[])
 
     Algorithm* algorithm = new Algorithm(model_jobs, model_workers, model_relations);
 
-//    algorithm->addLeftNodeGraph("Менеджер");
-//    algorithm->addRightPartGraph();
+    //setting graph data
     ListModelGraph::setGraph(algorithm);
 
+    //register new type to QML
     qmlRegisterType<ListModelGraph>("Graph",1,0,"Graph");
     qmlRegisterType<ModelGraph>("ModelGraph",1,0,"ModelGraph");
 
+    //filter for liveSearch in AdditionArea.qml -> showJobs
     QSortFilterProxyModel* proxy = new QSortFilterProxyModel();
     proxy->setSourceModel(model_jobs);
     proxy->setFilterRole(Qt::UserRole + 2);
     proxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
 
+    //add new property for QML
     engine.rootContext()->setContextProperty("db_model_jobs", model_jobs);
     engine.rootContext()->setContextProperty("db_model_jobs_filter", proxy);
     engine.rootContext()->setContextProperty("db_model_workers", model_workers);
@@ -64,9 +66,12 @@ int main(int argc, char *argv[])
 
     QObject* mainWindow = engine.rootObjects()[0];
 
-
     HandlerSignals* handlerSignals = new HandlerSignals(mainWindow);
 
+    //settting graph data
+    handlerSignals->setAlgorithm(algorithm);
+
+    //connect signals
     QObject::connect(mainWindow,SIGNAL(usedMenu(int)),
                      handlerSignals,SLOT(menu(int)));
 
