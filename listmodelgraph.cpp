@@ -4,7 +4,7 @@ Algorithm* ListModelGraph::m_algorithm = nullptr;
 
 ListModelGraph::ListModelGraph(QObject *parent) : QObject(parent)
 {
-    m_graph = new QList<ModelGraph*>();
+    m_graph = nullptr;
     this->update();
 }
 
@@ -22,12 +22,19 @@ void ListModelGraph::setGraph(Algorithm *graph)
 
 void ListModelGraph::update()
 {
+//    //clear memory
+//    if (m_graph != nullptr)
+//    {
+//        qDeleteAll(m_graph->begin(),m_graph->end());
+//        m_graph->clear();
+//        m_graph = nullptr;
+//    }
     this->m_graph = ListModelGraph::m_algorithm->getGraphConvert();
 
     //console output
-    foreach (ModelGraph* it, *m_graph) {
-        qDebug() << it->idJob() << " " << it->idWorker();
-    }
+//    foreach (ModelGraph* it, *m_graph) {
+//        qDebug() << it->idJob() << " " << it->idWorker();
+//    }
 
     emit dataChanged();
 }

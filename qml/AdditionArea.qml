@@ -14,7 +14,7 @@ Pane {
     property alias drawer_showWorks: showWorks
     property alias graph: graph
 
-    property int indexInfoWorker: -1
+    property int idInfoWorker: -1
 
     //program state tracking mode
     property bool existNodeMode: false
@@ -24,7 +24,7 @@ Pane {
 
     function getSpecialties(id) {
         var text_specialties = "";
-        for (var i = 0; i < db_model_relations.columnCount(); ++i) {
+        for (var i = 0; i < db_model_relations.elementsCount(); ++i) {
             if (db_model_relations.getIdSpecialist(i) === id) {
                 text_specialties +=
                         db_model_jobs.getTitle(db_model_jobs.getIndexById(db_model_relations.getIdSpecialty(i)));
@@ -93,16 +93,17 @@ Pane {
                     if (!graph.editingMode)
                         graph.editingMode = true
 
-                    var oldCountGraph = graph.thisGraph.count()
-
                     updateLeftNodesGraph.connect(graph.onUpdateLeftNodesGraph)
                     updateLeftNodesGraph(index)
 
                     updateLeftNodesGraph.disconnect(graph.onUpdateLeftNodesGraph)
 
-                    if (oldCountGraph !== graph.thisGraph.count()) {
+                    if (!existNodeMode && !existNode) {
                         existNode = true
-                        existNodeMode = true
+                    }
+
+                    if (existNodeMode) {
+                        existNode = existNodeMode
                         showJobs.close()
                     }
                 }
@@ -165,7 +166,7 @@ Pane {
                     font.pixelSize: 20
                     width: infoFio.width - labelTagfio.width
                     //text: "Джанис Локелани Кеиханаикукауакахихулихеекахаунаеле"
-                    text: db_model_workers.getFIO(db_model_workers.getIndexById(indexInfoWorker))
+                    text: db_model_workers.getFIO(db_model_workers.getIndexById(idInfoWorker))
                 }
 
             }
@@ -203,7 +204,7 @@ Pane {
                 Label {
                     wrapMode: Label.Wrap
                     font.pixelSize: 20
-                    text: db_model_workers.getSex(db_model_workers.getIndexById(indexInfoWorker))
+                    text: db_model_workers.getSex(db_model_workers.getIndexById(idInfoWorker))
                 }
 
             }
@@ -241,7 +242,7 @@ Pane {
                 Label {
                     wrapMode: Label.Wrap
                     font.pixelSize: 20
-                    text: db_model_workers.getAge(db_model_workers.getIndexById(indexInfoWorker))
+                    text: db_model_workers.getAge(db_model_workers.getIndexById(idInfoWorker))
                 }
 
             }
@@ -283,7 +284,7 @@ Pane {
                     font.pixelSize: 20
                     width: infoAdress.width - labelTagadress.width
                     //text: "Лланвайрпуллгуингиллгогерихуирндробуллллантисилиогого"
-                    text: db_model_workers.getAdress(db_model_workers.getIndexById(indexInfoWorker))
+                    text: db_model_workers.getAdress(db_model_workers.getIndexById(idInfoWorker))
                 }
 
             }
@@ -326,7 +327,8 @@ Pane {
                     font.pixelSize: 20
                     width: parent.width - labelTag.width
                     //text: "Программист С++" + "\nМенеджер" + "Web-Программист" + "Web-Программист" + "Web-Программист" + "\nWeb-Программист"
-                    text: getSpecialties(indexInfoWorker)
+                    text: getSpecialties(idInfoWorker)
+                    //text: db_model_workers.getAdress(db_model_workers.getIndexById(idInfoWorker))
                 }
 
             }

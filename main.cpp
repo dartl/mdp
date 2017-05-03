@@ -39,8 +39,8 @@ int main(int argc, char *argv[])
 
     Algorithm* algorithm = new Algorithm(model_jobs, model_workers, model_relations);
 
-    algorithm->addLeftNodeGraph("Менеджер");
-    algorithm->addRightPartGraph();
+//    algorithm->addLeftNodeGraph("Менеджер");
+//    algorithm->addRightPartGraph();
     ListModelGraph::setGraph(algorithm);
 
     qmlRegisterType<ListModelGraph>("Graph",1,0,"Graph");

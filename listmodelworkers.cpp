@@ -90,6 +90,7 @@ int ListModelWorkers::getIndex(int index)
 
 int ListModelWorkers::elementsCount()
 {
+    //qDebug() << "COLUMN_WORKER IN C++" << this->rowCount();
     return this->rowCount();
 }
 

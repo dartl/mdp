@@ -28,8 +28,8 @@ Pane {
     //slots for update Graph
     function onUpdateLeftNodesGraph(index) {
         //console.log(index)
-
-        data_graph.addLeftNodeGraph(db_model_jobs.getTitle(index))
+        addArea.existNodeMode = data_graph.addLeftNodeGraph(db_model_jobs.getTitle(index))
+        //existNodeMode = data_graph.addLeftNodeGraph(db_model_jobs.getTitle(index))
         graph.update()
     }
 
@@ -41,6 +41,8 @@ Pane {
         }
         //else info
     }
+
+    property var deleteNodesList: []
 
     Graph {
         id: graph
@@ -107,6 +109,15 @@ Pane {
                                     }
                                     else {
                                         checkDeletedNodeLeft.visible = false
+                                        checkDeletedNodeRight.visible = false
+
+                                        deleteNodesList.forEach(function(item,i,deleteNodesList){
+                                            if (item.name === "job" && item.value === modelData.idJob) {
+                                                console.log(item)
+                                            }
+
+
+                                        })
                                     }
                                 }
                             }
@@ -115,6 +126,10 @@ Pane {
                                 if (!deleteMode) {
                                     activeDeleteMode()
                                     checkDeletedNodeLeft.visible = true
+                                    checkDeletedNodeRight.visible = true
+
+                                    deleteNodesList.push({name: "job", value: modelData.idJob})
+                                    deleteNodesList.push({name: "worker", value: modelData.idWorker})
                                 }
                             }
                         }
@@ -166,7 +181,7 @@ Pane {
                                     }
                                 }
                                 else {
-                                    addArea.indexInfoWorker = modelData.idWorker
+                                    addArea.idInfoWorker = modelData.idWorker
                                     addArea.drawer_showWorks.open()
                                 }
                             }
@@ -175,6 +190,7 @@ Pane {
                                 if (!deleteMode) {
                                     activeDeleteMode()
                                     checkDeletedNodeRight.visible = true
+                                    deleteNodesList.push({name: "worker", value: modelData.idWorker})
                                 }
                             }
                         }

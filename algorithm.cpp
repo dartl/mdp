@@ -20,10 +20,10 @@ Algorithm::~Algorithm()
 QList<ModelGraph *> *Algorithm::getGraphConvert()
 {
     QList<ModelGraph* >* tempList = new QList<ModelGraph* >();
-    ModelGraph* tempModel = new ModelGraph();
 
     for (BipartiteGraph<int>::IteratorVertixs i = (*graph).beginVertixs(); i != (*graph).endVertixs(); ++i)
     {
+        ModelGraph* tempModel = new ModelGraph();
         if ((*i).isCheck())
         {
             bool nodeInPair = false;
@@ -66,14 +66,18 @@ void Algorithm::PrintPairs()
     }
 }
 
-void Algorithm::addLeftNodeGraph(QString title)
+bool Algorithm::addLeftNodeGraph(QString title)
 {
     int index = this->jobs->getIndexByTitle(title);
     if (!graph->checkVertix(this->jobs->getId(index)))
-        graph->addVertix(this->jobs->getId(index), true);
+    {
+         graph->addVertix(this->jobs->getId(index), true);
+         PrintVertixs();
+         return true;
+    }
     else
-        emit existingNode();
-    PrintVertixs();
+        return false;
+
 }
 
 void Algorithm::addRightPartGraph()

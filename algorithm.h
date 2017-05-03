@@ -41,7 +41,7 @@ signals:
     void existingNode();
 
 public slots:
-    void addLeftNodeGraph(QString title);
+    bool addLeftNodeGraph(QString title);
     void addRightPartGraph();
 
 };

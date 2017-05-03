@@ -11,6 +11,8 @@ ApplicationWindow {
     signal getIndexListJobs(string title)
     signal getIndexListWorkers(int index)
 
+    signal updateRightNodesGraph;
+
     visible: true
     id: mainWindow
     objectName: "mainWindow"
@@ -109,13 +111,18 @@ ApplicationWindow {
                     source: "qrc:/images/ic-search-spec.png"
                 }
                 onClicked: {
-                            if (stackView.currentItem.existNodeMode) {
+                            //if (stackView.currentItem.existNodeMode) {
                                 stackView.push(loadIndicator)
                                 delay(1000, function() {
                                     stackView.pop()
                                     stackView.currentItem.existNodeMode = false
+
+                                    updateRightNodesGraph.connect(stackView.currentItem.graph.onUpdateRightNodesGraph)
+                                    updateRightNodesGraph()
+                                    updateRightNodesGraph.disconnect(stackView.currentItem.graph.onUpdateRightNodesGraph)
+
                                })
-                            }
+                            //}
 
 
                 }
