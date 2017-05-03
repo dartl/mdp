@@ -18,6 +18,8 @@ ApplicationWindow {
     objectName: "mainWindow"
     width: 1000
     height: 600
+    minimumWidth: 900
+    minimumHeight: 500
     title: "Staff Search"
 
     Material.theme: Material.Light
@@ -55,7 +57,6 @@ ApplicationWindow {
 
         stackView.currentItem.graph.activeDeleteMode.connect(onActiveDeleteMode);
         stackView.currentItem.graph.inActiveDeleteMode.connect(onInActiveDeleteMode);
-        //graph.update()
     }
 
     //mode in Graph.qml
@@ -111,18 +112,16 @@ ApplicationWindow {
                     source: "qrc:/images/ic-search-spec.png"
                 }
                 onClicked: {
-                            //if (stackView.currentItem.existNodeMode) {
+                            if (stackView.currentItem.graph.searchRightNodesMode) {
                                 stackView.push(loadIndicator)
-                                delay(1000, function() {
+                                delay(800, function() {
                                     stackView.pop()
-                                    stackView.currentItem.existNodeMode = false
 
                                     updateRightNodesGraph.connect(stackView.currentItem.graph.onUpdateRightNodesGraph)
                                     updateRightNodesGraph()
                                     updateRightNodesGraph.disconnect(stackView.currentItem.graph.onUpdateRightNodesGraph)
-
                                })
-                            //}
+                            }
 
 
                 }
@@ -131,7 +130,7 @@ ApplicationWindow {
                     parent: search_button
                     leftMargin: mainWindow.width / 2 - width / 2
                     topMargin: mainWindow.height - height * 2
-                    visible:  search_button.pressed && !stackView.currentItem.existNodeMode
+                    visible:  search_button.pressed && !stackView.currentItem.graph.searchRightNodesMode
                     text: "Нечего искать!"
                     timeout: 5000
                 }
@@ -149,7 +148,7 @@ ApplicationWindow {
                 }
                 onClicked: {
                     stackView.currentItem.drawer_showJobs.open()
-                    stackView.currentItem.graph.editingMode = true
+                    //stackView.currentItem.graph.editingMode = true
                 }
             }
 
@@ -241,6 +240,9 @@ ApplicationWindow {
                             usedMenu(0)
                             onActiveAddArea()
 
+                            if (stackView.currentItem.graph.visibleGraphMode) {
+                                stackView.currentItem.graph.visibleGraphMode = false
+                            }
                         }
                         break;
                     case 1:
@@ -248,11 +250,8 @@ ApplicationWindow {
                             ListView.currentIndex = index
                             usedMenu(1)
                             onActiveAddArea()
-                            stackView.currentItem.graph.editingMode = true
-                            stackView.currentItem.graph.searchRightNodes = true
+                            stackView.currentItem.graph.visibleGraphMode = true
                             stackView.currentItem.graph.thisGraph.update()
-
-
                         }
                         break;
                     }

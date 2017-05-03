@@ -16,7 +16,7 @@ Pane {
 
     property int idInfoWorker: -1
 
-    //program state tracking mode
+    //program state tracking Mode
     property bool existNodeMode: false
 
     //signals for update Graph
@@ -90,8 +90,6 @@ Pane {
                 text: title
                 font.pixelSize: 20
                 onClicked: {
-                    if (!graph.editingMode)
-                        graph.editingMode = true
 
                     //bug#8 замена index на index из model_job
                     updateLeftNodesGraph.connect(graph.onUpdateLeftNodesGraph)
@@ -101,10 +99,27 @@ Pane {
 
                     if (!existNodeMode && !existNode) {
                         existNode = true
+                        //????
+//                        if (!graph.editingMode) {
+//                            graph.editingMode = true
+//                        }
+
+//                            if(graph.searchRightNodesMode)
+//                                graph.searchRightNodesMode = false
+
                     }
 
                     if (existNodeMode) {
                         existNode = existNodeMode
+
+                        if (!graph.editingMode) {
+                            graph.editingMode = true
+                            graph.visibleGraphMode = true
+                        }
+
+                        if(!graph.searchRightNodesMode)
+                            graph.searchRightNodesMode = true
+
                         showJobs.close()
                     }
                 }

@@ -59,6 +59,8 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("db_model_relations", model_relations);
     engine.rootContext()->setContextProperty("data_graph",algorithm);
 
+    //min
+
 
     engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
     if (engine.rootObjects().isEmpty())

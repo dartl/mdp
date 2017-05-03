@@ -13,23 +13,22 @@ Pane {
     property var mainWindow: null
     property var addArea: null
 
-    //program state tracking modes
+    //program state tracking Modes
     property bool deleteMode: false
     property bool editingMode: false
-    property bool searchRightNodes: false
+    property bool visibleGraphMode: false
+    property bool searchRightNodesMode: false
 
     //link to graph
     property alias thisGraph: graph
 
     //signals for deleteMode
-    signal activeDeleteMode()
-    signal inActiveDeleteMode()
+    signal activeDeleteMode
+    signal inActiveDeleteMode
 
     //slots for update Graph
     function onUpdateLeftNodesGraph(index) {
-        //console.log(index)
         addArea.existNodeMode = data_graph.addLeftNodeGraph(db_model_jobs.getTitle(index))
-        //existNodeMode = data_graph.addLeftNodeGraph(db_model_jobs.getTitle(index))
         graph.update()
     }
 
@@ -37,7 +36,7 @@ Pane {
         if (editingMode) {
             data_graph.addRightPartGraph()
             graph.update()
-            searchRightNodes = true
+            searchRightNodesMode = false
         }
         //else info
     }
@@ -51,7 +50,7 @@ Pane {
     Flickable {
         id: viewGraph
         anchors.fill: parent
-        visible: editingMode ? true : false
+        visible: visibleGraphMode ? true : false
         contentWidth: parent.width
         contentHeight: column.height
         flickableDirection: Flickable.VerticalFlick
@@ -62,14 +61,12 @@ Pane {
 
             Repeater {
                 model: graph.data
-
                 delegate: Item {
                     height: nodeLeft.height + 50
                     width: parent.width
-
                     Rectangle {
                         id: nodeLeft
-
+                        visible: visibleGraphMode ? true : false
                         anchors.left: parent.left
                         anchors.leftMargin: 50
 
@@ -137,8 +134,7 @@ Pane {
 
                     Rectangle {
                         id: nodeRight
-                        visible: searchRightNodes ? true : false
-
+                        visible: visibleGraphMode && (modelData.idWorker !== -1) ? true : false
                         anchors.right: parent.right
                         anchors.rightMargin: 50
 
@@ -201,11 +197,11 @@ Pane {
     }
 
     ColumnLayout {
-        id: layout
+        id: addLayout
         anchors.fill: parent
         spacing: 10
 
-        visible: editingMode ? false : true
+        visible: visibleGraphMode ? false : true
 
         Label {
             id: labelAdd
