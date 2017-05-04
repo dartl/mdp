@@ -25,6 +25,7 @@ public:
 
     Q_INVOKABLE void update();
     Q_INVOKABLE int count();
+    Q_INVOKABLE ModelGraph* getElementGraph(int index);
 
 signals:
     void dataChanged();

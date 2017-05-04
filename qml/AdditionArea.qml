@@ -20,7 +20,7 @@ Pane {
     property bool existNodeMode: false
 
     //signals for update Graph
-    signal updateLeftNodesGraph(int index)
+    signal updateLeftNodesGraph(string title_job)
 
     function getSpecialties(id) {
         var text_specialties = "";
@@ -93,7 +93,7 @@ Pane {
 
                     //bug#8 замена index на index из model_job
                     updateLeftNodesGraph.connect(graph.onUpdateLeftNodesGraph)
-                    updateLeftNodesGraph(index)
+                    updateLeftNodesGraph(title)
 
                     updateLeftNodesGraph.disconnect(graph.onUpdateLeftNodesGraph)
 

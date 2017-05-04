@@ -27,9 +27,29 @@ Pane {
     signal inActiveDeleteMode
 
     //slots for update Graph
-    function onUpdateLeftNodesGraph(index) {
-        addArea.existNodeMode = data_graph.addLeftNodeGraph(db_model_jobs.getTitle(index))
+    function onUpdateLeftNodesGraph(title_job) {
+        addArea.existNodeMode = data_graph.addLeftNodeGraph(db_model_jobs.getId(db_model_jobs.getIndexByTitle(title_job)))
         graph.update()
+    }
+
+    /*  Проверка на повторяемость специльностей.
+        Такая ситуация возникает если в БД присутствуют специалисты с одинаковым весом
+        и необходимо отобразить несколько специалистов, связанных с одной специальностью.
+        Данная функция применяется в проверке свойства visible у NodeLeft в делегаде модели графа.
+        На экране не отображаются одинаковые специальности.
+    */
+    function checkSameNode(idJob) {
+        var sameNodes = 0;
+        for (var i = 0; i < graph.count(); ++i) {
+            if (graph.getElementGraph(i).idJob === idJob) {
+                ++sameNodes;
+            }
+        }
+        //console.log("SameNodes " + sameNodes);
+        if (sameNodes > 1)
+            return false
+        else
+            return true
     }
 
     function onUpdateRightNodesGraph() {
@@ -66,7 +86,7 @@ Pane {
                     width: parent.width
                     Rectangle {
                         id: nodeLeft
-                        visible: visibleGraphMode ? true : false
+                        visible: visibleGraphMode && checkSameNode(modelData.idJob) ? true : false
                         anchors.left: parent.left
                         anchors.leftMargin: 50
 
@@ -103,18 +123,22 @@ Pane {
                                 if (deleteMode) {
                                     if (!checkDeletedNodeLeft.visible) {
                                         checkDeletedNodeLeft.visible = true
+                                        checkDeletedNodeRight.visible = true
                                     }
                                     else {
                                         checkDeletedNodeLeft.visible = false
                                         checkDeletedNodeRight.visible = false
 
-                                        deleteNodesList.forEach(function(item,i,deleteNodesList){
-                                            if (item.name === "job" && item.value === modelData.idJob) {
-                                                console.log(item)
-                                            }
+//                                        deleteNodesList.forEach(function(item,i,deleteNodesList){
+//                                            if (item.name === "job" && item.value === modelData.idJob) {
+//                                                console.log(item)
+//                                            }
+//                                        })
 
-
-                                        })
+//                                        inActiveDeleteMode = false
+//                                        if (deleteNodesList.length === 0) {
+//                                            inActiveDeleteMode()
+//                                        }
                                     }
                                 }
                             }

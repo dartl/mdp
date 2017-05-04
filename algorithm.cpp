@@ -66,59 +66,23 @@ void Algorithm::PrintPairs()
     }
 }
 
-bool Algorithm::addLeftNodeGraph(QString title)
+bool Algorithm::addLeftNodeGraph(int id)
 {
-    int index = this->jobs->getIndexByTitle(title);
-    if (!graph->checkVertix(this->jobs->getId(index)))
+    if (!graph->checkVertix(id))
     {
-         graph->addVertix(this->jobs->getId(index), true);
+        graph->addVertix(id, true);
          PrintVertixs();
          return true;
     }
     else
         return false;
-
 }
 
 void Algorithm::addRightPartGraph()
 {
-//    int j = 0;
-//    for (BipartiteGraph<int>::IteratorVertixs i = (*graph).beginVertixs(); i != (*graph).endVertixs(); i++, j++)
-//    {
+    //при уже существующем графе??????
+    this->graph->removeAllFalse();
 
-//        if (!(*i).isCheck())
-//            graph->removeVertixNode(j);
-//            // TODO: удалить все вершины с параметром false
-//    }
-//    for (BipartiteGraph<int>::IteratorVertixs i = (*graph).beginVertixs(); i != (*graph).endVertixs(); i++)
-//    {
-//        if ((*i).isCheck()) {
-//            int currMax = -1;
-//            int workerMax = -1;
-//            int indexId = this->jobs->getIndexById((*i).getData());
-//            for (int j = 0; j < this->workers->elementsCount(); j++)
-//            {
-//                if (this->jobs->getTitle(indexId) == this->workers->getSpeciality(j))
-//                {
-//                      if (this->workers->getLevelSpec(j) > currMax)
-//                      {
-//                          workerMax = j;
-//                          currMax = this->workers->getLevelSpec(j);
-//                      }
-//                }
-
-//            }
-//            graph->addVertix(this->workers->getId(workerMax), false);
-//            graph->addPair(&(graph->getVertixNode((*i).getData())), &(graph->getVertixNode(this->workers->getId(workerMax))));
-
-//        }
-
-////        graph->addPair(&(graph->getVertixNode((*i).getData())), &(graph->getVertixNode(this->workers->getId(workerMax))));
-//    }
-//    PrintVertixs();
-//    PrintPairs();
-
-    graph->removeAllFalse();
     for (BipartiteGraph<int>::IteratorVertixs i = (*graph).beginVertixs(); i != (*graph).endVertixs(); i++)
     {
         if ((*i).isCheck()) {
@@ -136,8 +100,8 @@ void Algorithm::addRightPartGraph()
                     }
                 }
             }
-            graph->addVertix(workers->getId(currWorkerMax), false);
-            graph->addPair(&(graph->getVertixNode((*i).getData())), &(graph->getVertixNode(workers->getId(currWorkerMax))));
+            graph->addVertix(currWorkerMax, false);
+            graph->addPair(&(graph->getVertixNode((*i).getData())), &(graph->getVertixNode(currWorkerMax)));
         }
     }
     PrintVertixs();

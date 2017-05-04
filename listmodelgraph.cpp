@@ -44,6 +44,12 @@ int ListModelGraph::count()
     return m_graph->count();
 }
 
+ModelGraph *ListModelGraph::getElementGraph(int index)
+{
+    return m_graph->at(index);
+}
+
+
 void ListModelGraph::appendData(QQmlListProperty<ModelGraph> *list, ModelGraph *value)
 {
     QList<ModelGraph*>* data = static_cast<QList<ModelGraph*> *>(list->data);

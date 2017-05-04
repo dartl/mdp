@@ -26,6 +26,9 @@ ApplicationWindow {
     Material.accent: Material.BlueGrey
     Material.primary: Material.BlueGrey
 
+    //flag to open file
+    property bool isOpenFile : false
+
     //timer for delay simulator
     Timer {
         id:timer
@@ -163,6 +166,35 @@ ApplicationWindow {
                     source: "qrc:/images/ic-delete-node.png"
                 }
                 onClicked: {
+                    optionsDelete.open()
+                }
+
+                Menu {
+                    id: optionsDelete
+                    x: mainWindow.width - width
+                    y: toolbar.height
+                    transformOrigin: Menu.TopRight
+
+                    MenuItem {
+                        RowLayout {
+                            anchors.centerIn: parent
+                            spacing: 10
+
+                            Image {
+                                fillMode: Image.Pad
+                                source: "qrc:/images/ic-delete-forever.png"
+                                horizontalAlignment: Image.AlignHCenter
+                                verticalAlignment: Image.AlignVCenter
+                            }
+
+                            Label {
+                                text: "Удалить" + " (5)"
+                                color: Material.color(Material.Red)
+                                font.pixelSize: 20
+                                Layout.fillWidth: true
+                            }
+                        }
+                    }
                 }
             }
 
@@ -237,7 +269,7 @@ ApplicationWindow {
                     case 0:
                         if (ListView.currentIndex != index) {
                             ListView.currentIndex = index
-                            usedMenu(0)
+                            usedMenu(index)
                             onActiveAddArea()
 
                             if (stackView.currentItem.graph.visibleGraphMode) {
@@ -248,12 +280,17 @@ ApplicationWindow {
                     case 1:
                         if (ListView.currentIndex != index) {
                             ListView.currentIndex = index
-                            usedMenu(1)
+                            usedMenu(index)
                             onActiveAddArea()
                             stackView.currentItem.graph.visibleGraphMode = true
                             stackView.currentItem.graph.thisGraph.update()
+
+                            isOpenFile = true
                         }
                         break;
+                     case 4:
+                         usedMenu(index)
+                         break;
                     }
                     //usedMenu(index)
                     nav.close()
