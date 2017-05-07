@@ -51,13 +51,12 @@ namespace bpg {
         }
         bool operator==(const Node<Type>& other)
         {
-            return data ==
-                    other.getData();
+            return (data ==
+                    other.getData()) && (check == other.isCheck());
         }
         bool operator!=(const Node<Type>& other)
         {
-            return !(data ==
-                     other.getData());
+            return !(this == other);
         }
     };
 
@@ -91,8 +90,7 @@ namespace bpg {
         }
         bool operator==(const PairNode<Type>& other)
         {
-            Node<Type> f = other.getFisrt();
-            return first->getData() == f.getData();
+            return (first->getData() == other.getFisrt().getData()) && (second->getData() == other.getSecond().getData());
         }
         bool operator!=(const PairNode<Type>& other)
         {
@@ -211,12 +209,12 @@ namespace bpg {
             }
         }
 
-        Node<Type>* getVertixNode(Type d){
+        Node<Type>* getVertixNode(Type d, bool ch){
             bool check = false;
             IteratorVertixs v = beginVertixs();
             for(; v != endVertixs(); ++v){
                 Node<Type>* node = *v;
-                if (node->getData() == d) {
+                if (node->getData() == d && node->isCheck() == ch) {
                     check = true;
                     break;
                 }
