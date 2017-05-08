@@ -1,0 +1,110 @@
+﻿main.qml -> inititialPane -> Label
+------------------------------ 
+eng: Create a new model or open an existing one
+ru: Создайте новую модель или откройте существующую
+______________________________
+main.qml -> mainWindow -> title
+------------------------------ 
+eng: Staff Search
+ru: Поиск сотрудников
+______________________________
+main.qml -> nav -> delegate -> ListElement(0)
+------------------------------ 
+eng: Create
+ru: Создать
+______________________________
+main.qml -> nav -> delegate -> ListElement(1)
+------------------------------ 
+eng: Open
+ru: Открыть
+______________________________
+main.qml -> nav -> delegate -> ListElement(2)
+------------------------------ 
+eng: Save
+ru: Сохранить
+______________________________
+main.qml -> nav -> delegate -> ListElement(3)
+------------------------------ 
+eng: Save as
+ru: Сохранить как
+______________________________
+main.qml -> nav -> delegate -> ListElement(4)
+------------------------------ 
+eng: Exit
+ru: Выход
+______________________________
+main.qml -> toolbar -> additional_menu -> Menu -> MenuItem
+------------------------------ 
+eng: Settings
+ru: Настройки
+______________________________
+main.qml -> toolbar -> additional_menu -> Menu -> MenuItem
+------------------------------ 
+eng: About
+ru: О приложении
+______________________________
+main.qml -> settingsPopup -> settingsColumn -> Label
+------------------------------ 
+eng: Settings
+ru: Настройки
+______________________________
+main.qml -> settingsPopup -> settingsColumn -> RowLayout -> Label
+------------------------------ 
+eng: Language
+ru: Язык
+______________________________
+main.qml -> settingsPopup -> settingsColumn -> RowLayout -> cancelButton
+------------------------------ 
+eng: Cancel
+ru: Отмена
+______________________________
+main.qml -> aboutDialog -> aboutColumn -> Label
+------------------------------ 
+eng: About application
+ru: О приложении
+______________________________
+main.qml -> aboutDialog -> aboutColumn -> Label
+------------------------------ 
+eng: Staff Search
+ru: Поиск работников
+______________________________
+main.qml -> aboutDialog -> aboutColumn -> Label
+------------------------------ 
+eng: The application helps in finding staff
+ru: Приложение помогает в поиске сотрудников
+______________________________
+main.qml -> dialogEditingMode -> columnInfo -> Label
+------------------------------ 
+eng: Save the current model
+ru: Сохранить текущую модель
+______________________________
+main.qml -> dialogEditingMode -> columnInfo -> Label
+------------------------------ 
+eng: Application help in search staff
+ru: Сохранить текущую модель
+______________________________
+main.qml -> dialogEditingMode -> RowLayout -> okButton2
+------------------------------ 
+eng: Yes
+ru: Да
+______________________________
+main.qml -> dialogEditingMode -> RowLayout -> cancelButton2
+------------------------------ 
+eng: Cancel
+ru: Отмена
+______________________________
+main.qml -> toolbar -> deleteNode_button -> optionsDelete -> MenuItem -> Label
+------------------------------ 
+eng: Delete
+ru: Удалить
+______________________________
+AdditionArea.qml -> showJobs -> paneSearch -> liveSearch
+------------------------------ 
+eng: Enter the Specialty
+ru: Введите специльность
+______________________________
+Graph.qml -> addLayout -> labelAdd
+------------------------------ 
+eng: Click to Add
+ru: Нажмите для добавления
+______________________________

@@ -15,10 +15,14 @@
 #include "algorithm.h"
 #include "modelgraph.h"
 #include "listmodelgraph.h"
+#include "qmltranslator.h"
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
+    QGuiApplication::setApplicationName("SearchStaff");
+    QGuiApplication::setOrganizationDomain("Leti");
+    QGuiApplication::setOrganizationName("2303/2304");
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QQmlApplicationEngine engine;
 
@@ -27,11 +31,20 @@ int main(int argc, char *argv[])
     QSqlDatabase mybase;
     //connect with BD
     mybase = QSqlDatabase::addDatabase("QSQLITE");
-    mybase.setDatabaseName(qApp->applicationDirPath() + "/DataBase/database.sqlite");
+    mybase.setDatabaseName(QCoreApplication::applicationDirPath() + "/DataBase/database.sqlite");
     if (!mybase.open())
     {
         qDebug() << mybase.lastError().text();
     }
+
+//    QSqlDatabase* mybase = new QSqlDatabase(QSqlDatabase::addDatabase("QSQLITE"));
+//    //connect with BD
+//    mybase->setDatabaseName(QCoreApplication::applicationDirPath() + "/DataBase/database.sqlite");
+//    if (!mybase->open())
+//    {
+//        qDebug() << mybase->lastError().text();
+//    }
+
 
     ListModelJobs* model_jobs = new ListModelJobs(mybase);
     ListModelWorkers* model_workers = new ListModelWorkers(mybase);
@@ -59,16 +72,17 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("db_model_relations", model_relations);
     engine.rootContext()->setContextProperty("data_graph",algorithm);
 
-    //min
-
+    //translate
+    QMLTranslator qmlTranslator;
+    engine.rootContext()->setContextProperty("qmlTranslator", &qmlTranslator);
 
     engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
     if (engine.rootObjects().isEmpty())
         return -1;
 
     QObject* mainWindow = engine.rootObjects()[0];
-
     HandlerSignals* handlerSignals = new HandlerSignals(mainWindow);
+
 
     //settting graph data
     handlerSignals->setAlgorithm(algorithm);
@@ -80,11 +94,11 @@ int main(int argc, char *argv[])
     QObject::connect(handlerSignals,SIGNAL(exit()),
                      qApp,SLOT(quit()));
 
-    QObject::connect(mainWindow,SIGNAL(getIndexListJobs(QString)),
-                     model_jobs,SLOT(getIndexByTitle(QString)));
+//    QObject::connect(mainWindow,SIGNAL(getIndexListJobs(QString)),
+//                     model_jobs,SLOT(getIndexByTitle(QString)));
 
-    QObject::connect(mainWindow,SIGNAL(getIndexListWorkers(int)),
-                     model_workers,SLOT(getIndex(int)));
+//    QObject::connect(mainWindow,SIGNAL(getIndexListWorkers(int)),
+//                     model_workers,SLOT(getIndex(int)));
 
     return app.exec();
 }

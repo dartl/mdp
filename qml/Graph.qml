@@ -30,6 +30,7 @@ Pane {
     function onUpdateLeftNodesGraph(title_job) {
         addArea.existNodeMode = data_graph.addLeftNodeGraph(db_model_jobs.getId(db_model_jobs.getIndexByTitle(title_job)))
         graph.update()
+        console.log("existNodeMode " + addArea.existNodeMode)
     }
 
     /*  Проверка на повторяемость специльностей.
@@ -230,7 +231,7 @@ Pane {
         Label {
             id: labelAdd
             anchors.centerIn: parent
-            text: "Нажмите для добавления"
+            text: qsTr("Click to Add") + qmlTranslator.emptyString
             font.pixelSize: 30
             color: Material.color(Material.Grey)
         }
@@ -252,106 +253,5 @@ Pane {
 
 
     }
-
-
-//    Popup {
-//        id: addJobs
-//        x: (mainWindow.width - width) / 2
-//        y: mainWindow.height / 6
-//        width: Math.min(mainWindow.width, mainWindow.height) / 3 * 1.5
-//        height: columnJobs.implicitHeight + topPadding + bottomPadding
-//        modal: true
-//        focus: true
-
-//        contentItem: ColumnLayout {
-//            id: columnJobs
-//            Button {
-//                id: addButton
-//                text: "Добавить специальность"
-//                onClicked: {
-//                    addJobs.close()
-//                }
-
-//                Material.foreground: Material.primary
-//                Material.background: "transparent"
-//                Material.elevation: 0
-
-//                Layout.preferredWidth: 0
-//                Layout.fillWidth: true
-//            }
-
-//            Button {
-//                id: deleteAllButton
-//                text: "Удалить модель"
-//                onClicked: {
-//                    addJobs.close()
-//                    dialogDeleteModel.open()
-//                }
-
-//                Material.foreground: Material.Red
-//                Material.background: "transparent"
-//                Material.elevation: 0
-
-//                Layout.preferredWidth: 0
-//                Layout.fillWidth: true
-//            }
-//        }
-//    }
-
-
-//    Popup {
-//        id: dialogDeleteModel
-//        x: (mainWindow.width - width) / 2
-//        y: mainWindow.height / 6
-//        width: Math.min(mainWindow.width, mainWindow.height) / 3 * 2
-//        height: columnInfo.implicitHeight + topPadding + bottomPadding
-//        modal: true
-//        focus: true
-
-//        contentItem: ColumnLayout {
-//            id: columnInfo
-//            spacing: 20
-//            Label {
-//                text: "Удалить столько то моделей?"
-//                font.pixelSize: 20
-//                anchors.top: parent.top
-//                anchors.topMargin: 10
-//                anchors.horizontalCenter: parent.horizontalCenter
-
-//                color: Material.color(Material.Red)
-//            }
-
-//            RowLayout {
-//                spacing: 10
-
-//                Button {
-//                    id: okButton
-//                    text: "Да"
-//                    onClicked: {
-//                        dialogDeleteModel.close()
-//                    }
-
-//                    Material.foreground: Material.Red
-//                    Material.background: "transparent"
-//                    Material.elevation: 0
-
-//                    Layout.fillWidth: true
-//                }
-
-//                Button {
-//                    id: cancelButton
-//                    text: "Отмена"
-//                    onClicked: {
-//                        dialogDeleteModel.close()
-//                    }
-
-//                    Material.background: "transparent"
-//                    Material.elevation: 0
-
-//                    Layout.fillWidth: true
-//                }
-//            }
-//        }
-//    }
 }
 
