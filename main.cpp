@@ -14,6 +14,7 @@
 #include "listmodelrelationsss.h"
 #include "algorithm.h"
 #include "modelgraph.h"
+#include "listmodelgraph.h"
 
 int main(int argc, char *argv[])
 {
@@ -21,10 +22,7 @@ int main(int argc, char *argv[])
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QQmlApplicationEngine engine;
 
-
-
     QQuickStyle::setStyle("Material");
-
 
     QSqlDatabase mybase;
     //connect with BD
@@ -39,30 +37,43 @@ int main(int argc, char *argv[])
     ListModelWorkers* model_workers = new ListModelWorkers(mybase);
     ListModelRelationsSS* model_relations = new ListModelRelationsSS(mybase);
 
-    /////////
-//    Algorithm* algorithm = new Algorithm(model_jobs, model_workers, model_relations);
-//    algorithm->a
-    /////////
+    Algorithm* algorithm = new Algorithm(model_jobs, model_workers, model_relations);
 
+    //setting graph data
+    ListModelGraph::setGraph(algorithm);
+
+    //register new type to QML
+    qmlRegisterType<ListModelGraph>("Graph",1,0,"Graph");
     qmlRegisterType<ModelGraph>("ModelGraph",1,0,"ModelGraph");
 
+    //filter for liveSearch in AdditionArea.qml -> showJobs
     QSortFilterProxyModel* proxy = new QSortFilterProxyModel();
     proxy->setSourceModel(model_jobs);
     proxy->setFilterRole(Qt::UserRole + 2);
     proxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
 
+    //add new property for QML
     engine.rootContext()->setContextProperty("db_model_jobs", model_jobs);
     engine.rootContext()->setContextProperty("db_model_jobs_filter", proxy);
     engine.rootContext()->setContextProperty("db_model_workers", model_workers);
     engine.rootContext()->setContextProperty("db_model_relations", model_relations);
+    engine.rootContext()->setContextProperty("data_graph",algorithm);
+
+    //min
+
 
     engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
     if (engine.rootObjects().isEmpty())
         return -1;
 
     QObject* mainWindow = engine.rootObjects()[0];
+
     HandlerSignals* handlerSignals = new HandlerSignals(mainWindow);
 
+    //settting graph data
+    handlerSignals->setAlgorithm(algorithm);
+
+    //connect signals
     QObject::connect(mainWindow,SIGNAL(usedMenu(int)),
                      handlerSignals,SLOT(menu(int)));
 

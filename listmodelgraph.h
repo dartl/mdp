@@ -3,22 +3,44 @@
 
 #include <QObject>
 #include <QDebug>
+#include <QQmlListProperty>
 
 #include "algorithm.h"
+#include "modelgraph.h"
 
 
-class ListModelGraph : QAbstractItemModel
+class ListModelGraph : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QQmlListProperty<ModelGraph> data READ data NOTIFY dataChanged)
+    Q_CLASSINFO("DefaultProperty", "data")
+
 public:
-    enum Roles {
-        IdWorker = Qt::UserRole + 1,
-        IdJob,
+    ListModelGraph(QObject *parent = 0);
+
+    QQmlListProperty<ModelGraph> data();
+
+    static void setGraph(Algorithm *graph);
 
 
-    };
+    Q_INVOKABLE void update();
+    Q_INVOKABLE int count();
+    Q_INVOKABLE ModelGraph* getElementGraph(int index);
 
-    ListModelGraph();
+signals:
+    void dataChanged();
+
+protected:
+    static Algorithm* m_algorithm;
+
+private:
+    QList<ModelGraph*>* m_graph;
+
+    static void appendData(QQmlListProperty<ModelGraph> *list, ModelGraph *value);
+    static int countData(QQmlListProperty<ModelGraph> *list);
+    static ModelGraph *atData(QQmlListProperty<ModelGraph> *list, int index);
+    static void clearData(QQmlListProperty<ModelGraph> *list);
 };
+
 
 #endif // LISTMODELGRAPH_H

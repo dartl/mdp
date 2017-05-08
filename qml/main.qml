@@ -6,32 +6,35 @@ import Qt.labs.settings 1.0
 
 ApplicationWindow {
     signal usedMenu(int index)
+
+    //???????
     signal getIndexListJobs(string title)
     signal getIndexListWorkers(int index)
-    signal visiableDelete()
 
-
+    signal updateRightNodesGraph;
 
     visible: true
     id: mainWindow
     objectName: "mainWindow"
     width: 1000
     height: 600
-    //color: "#cccccc"
+    minimumWidth: 900
+    minimumHeight: 500
     title: "Staff Search"
-
-    /*
-      new design
-    */
 
     Material.theme: Material.Light
     Material.accent: Material.BlueGrey
     Material.primary: Material.BlueGrey
 
+    //flag to open file
+    property bool isOpenFile : false
+
+    //timer for delay simulator
     Timer {
         id:timer
     }
 
+    //delay simulator for LoadIndicator.qml
     function delay(delayTime, cb) {
         timer.interval = delayTime;
         timer.repeat = false;
@@ -39,12 +42,54 @@ ApplicationWindow {
         timer.start();
     }
 
+    //add slots for Graph.qml
+    function onActiveAddArea() {
+//        if (stackView.depth !== 0) {
+//            if (stackView.currentItem.graph.editingMode) {
+//                dialogEditingMode.open()
+//                stackView.currentItem.graph.editingMode = false;
+//            }
+//        }
+
+        stackView.replace(addArea);
+        if (!addNode_button.visible)
+            addNode_button.visible = true;
+
+        if (!search_button.visible)
+            search_button.visible = true;
+
+        stackView.currentItem.graph.activeDeleteMode.connect(onActiveDeleteMode);
+        stackView.currentItem.graph.inActiveDeleteMode.connect(onInActiveDeleteMode);
+    }
+
+    //mode in Graph.qml
+    function onActiveDeleteMode() {
+        if (!stackView.currentItem.graph.deleteMode) {
+            deleteNode_button.visible = true;
+            addNode_button.anchors.right = deleteNode_button.left;
+            stackView.currentItem.graph.deleteMode = true;
+        }
+
+        console.log("ActiveDeleteMode")
+    }
+
+    //mode in Graph.qml
+    function onInActiveDeleteMode() {
+        if (stackView.currentItem.graph.deleteMode) {
+            deleteNode_button.visible = false;
+            addNode_button.anchors.right = additional_menu.left;
+            stackView.currentItem.graph.deleteMode = false;
+        }
+
+        console.log("InActiveDeleteMode")
+    }
 
     header: ToolBar {
         Material.foreground: "white"
         id: toolbar
 
         RowLayout {
+            id: layout
             spacing: 0
             anchors.fill: parent
 
@@ -61,6 +106,7 @@ ApplicationWindow {
 
             ToolButton {
                 id: search_button
+                visible: false
                 anchors.left: menu_button.right
                 contentItem: Image {
                     fillMode: Image.Pad
@@ -69,16 +115,36 @@ ApplicationWindow {
                     source: "qrc:/images/ic-search-spec.png"
                 }
                 onClicked: {
-                            stackView.replace("qrc:/qml/LoadIndicator.qml")
-                            delay(1000, function() {
-                               stackView.replace("qrc:/qml/AdditionArea.qml")
-                           })
+                            if (stackView.currentItem.graph.searchRightNodesMode) {
+//                                stackView.push(loadIndicator)
+//                                delay(800, function() {
+//                                    stackView.pop()
+
+//                                    updateRightNodesGraph.connect(stackView.currentItem.graph.onUpdateRightNodesGraph)
+//                                    updateRightNodesGraph()
+//                                    updateRightNodesGraph.disconnect(stackView.currentItem.graph.onUpdateRightNodesGraph)
+//                               })
+                                updateRightNodesGraph.connect(stackView.currentItem.graph.onUpdateRightNodesGraph)
+                                updateRightNodesGraph()
+                                updateRightNodesGraph.disconnect(stackView.currentItem.graph.onUpdateRightNodesGraph)
+                            }
+
+
+                }
+
+                ToolTip {
+                    parent: search_button
+                    leftMargin: mainWindow.width / 2 - width / 2
+                    topMargin: mainWindow.height - height * 2
+                    visible:  search_button.pressed && !stackView.currentItem.graph.searchRightNodesMode
+                    text: "Нечего искать!"
+                    timeout: 5000
                 }
             }
 
             ToolButton {
-                visible: false
                 id: addNode_button
+                visible: false
                 anchors.right: additional_menu.left
                 contentItem: Image {
                     fillMode: Image.Pad
@@ -87,13 +153,14 @@ ApplicationWindow {
                     source: "qrc:/images/ic-add-node.png"
                 }
                 onClicked: {
-                    //showJobs.open()
+                    stackView.currentItem.drawer_showJobs.open()
+                    //stackView.currentItem.graph.editingMode = true
                 }
             }
 
             ToolButton {
-                visible: false
                 id: deleteNode_button
+                visible: false
                 anchors.right: additional_menu.left
                 contentItem: Image {
                     fillMode: Image.Pad
@@ -102,6 +169,35 @@ ApplicationWindow {
                     source: "qrc:/images/ic-delete-node.png"
                 }
                 onClicked: {
+                    optionsDelete.open()
+                }
+
+                Menu {
+                    id: optionsDelete
+                    x: mainWindow.width - width
+                    y: toolbar.height
+                    transformOrigin: Menu.TopRight
+
+                    MenuItem {
+                        RowLayout {
+                            anchors.centerIn: parent
+                            spacing: 10
+
+                            Image {
+                                fillMode: Image.Pad
+                                source: "qrc:/images/ic-delete-forever.png"
+                                horizontalAlignment: Image.AlignHCenter
+                                verticalAlignment: Image.AlignVCenter
+                            }
+
+                            Label {
+                                text: "Удалить" + " (5)"
+                                color: Material.color(Material.Red)
+                                font.pixelSize: 20
+                                Layout.fillWidth: true
+                            }
+                        }
+                    }
                 }
             }
 
@@ -165,21 +261,41 @@ ApplicationWindow {
 
                     Label {
                         text: model.title
+                        font.pixelSize: 20
                         Layout.fillWidth: true
                     }
                 }
 
                 highlighted: ListView.isCurrentItem
                 onClicked: {
-                    if (index === 0) {
+                    switch(index) {
+                    case 0:
                         if (ListView.currentIndex != index) {
                             ListView.currentIndex = index
-                            stackView.replace("qrc:/qml/AdditionArea.qml")
-                            addNode_button.visible = true
-                        }
-                    }
+                            usedMenu(index)
+                            onActiveAddArea()
 
-                    usedMenu(index)
+                            if (stackView.currentItem.graph.visibleGraphMode) {
+                                stackView.currentItem.graph.visibleGraphMode = false
+                            }
+                        }
+                        break;
+                    case 1:
+                        if (ListView.currentIndex != index) {
+                            ListView.currentIndex = index
+                            usedMenu(index)
+                            onActiveAddArea()
+                            stackView.currentItem.graph.visibleGraphMode = true
+                            stackView.currentItem.graph.thisGraph.update()
+
+                            isOpenFile = true
+                        }
+                        break;
+                     case 4:
+                         usedMenu(index)
+                         break;
+                    }
+                    //usedMenu(index)
                     nav.close()
                 }
             }
@@ -200,7 +316,12 @@ ApplicationWindow {
         id: stackView
         anchors.fill: parent
 
-        initialItem: Pane {
+        initialItem: initialPane
+    }
+
+    Component {
+        id: initialPane
+        Pane {
             id: pane
 
             Label {
@@ -219,6 +340,20 @@ ApplicationWindow {
         }
     }
 
+    Component {
+        id: addArea
+
+        AdditionArea {
+            pointer_mainWindow: mainWindow
+        }
+    }
+
+    Component {
+        id: loadIndicator
+
+        LoadIndicator {
+        }
+    }
 
     Popup {
         id: settingsPopup
@@ -329,193 +464,59 @@ ApplicationWindow {
         }
     }
 
+    Popup {
+        id: dialogEditingMode
+        x: (mainWindow.width - width) / 2
+        y: mainWindow.height / 6
+        width: Math.min(mainWindow.width, mainWindow.height) / 3 * 2
+        height: columnInfo.implicitHeight + topPadding + bottomPadding
+        modal: true
+        focus: true
+
+        contentItem: ColumnLayout {
+            id: columnInfo
+            spacing: 20
+            Label {
+                text: "Сохранить текущую модель?"
+                font.pixelSize: 20
+                anchors.top: parent.top
+                anchors.topMargin: 10
+                anchors.horizontalCenter: parent.horizontalCenter
+
+                color: Material.color(Material.BlueGrey)
+            }
+
+            RowLayout {
+                spacing: 10
+
+                Button {
+                    id: okButton2
+                    text: "Да"
+                    onClicked: {
+                        dialogEditingMode.close()
+                        //open SAVE_WINDOW_IN_WINDOWS OR SIGNAL
+                    }
+
+                    Material.foreground: Material.Red
+                    Material.background: "transparent"
+                    Material.elevation: 0
+
+                    Layout.fillWidth: true
+                }
+
+                Button {
+                    id: cancelButton2
+                    text: "Отмена"
+                    onClicked: {
+                        dialogEditingMode.close()
+                    }
+
+                    Material.background: "transparent"
+                    Material.elevation: 0
+
+                    Layout.fillWidth: true
+                }
+            }
+        }
+    }
 }
-
-
-
-
-
-
-
-      /*
-        old design
-      */
-//    property color  fontColor: "#222"
-//    property color darkFontColor: "#e7e7e7"
-//    //property for graph
-//    //property ListModel model_graph: null
-
-
-//    // Пересчёт независимых от плотности пикселей в физические пиксели устройства
-//    readonly property int dpi: Screen.pixelDensity * 25.4
-//    function dp(x){ return (dpi < 120) ? x : x*(dpi/160); }
-
-//    FontLoader {
-//        id: openSans
-//        source: "qrc:/fonts/OpenSans-Regular.ttf"
-//     }
-
-//    Text {
-//        id: textSingleton
-//    }
-
-//    //костыль-обертка для всех элементов, для грамотного расположения
-//    Rectangle {
-//        id: workArea
-//        anchors.fill: parent
-
-//        ControlViewToolBar {
-//            id: toolBar
-//        }
-
-//        AdditionArea {
-//            id: addArea
-//            anchors.top: toolBar.bottom
-//            anchors.left: parent.left
-//            anchors.right: parent.right
-//            anchors.bottom: parent.bottom
-//        }
-
-//        NavigationDrawer {
-//            id: nav
-//            //bug№3
-//            _rootItem: addArea
-//            anchors.top: toolBar.bottom
-//            _openMarginSize: 0
-//            //////
-//            Rectangle {
-//                anchors.fill: parent
-
-//                color: "#99958c"
-
-//                ListView {
-//                    clip: true
-//                    interactive: false
-//                    anchors.fill: parent
-
-//                    //Модель данных для списка меню
-//                    model: ListModel {
-//                        ListElement {title: "Создать"; icon: "qrc:/images/icon-create-menu.png"}
-//                        ListElement {title: "Открыть"; icon: "qrc:/images/icon-open-menu.png"}
-//                        ListElement {title: "Сохранить"; icon: "qrc:/images/icon-save-menu.png"}
-//                        ListElement {title: "Сохранить как"; icon: "qrc:/images/icon-save-menu.png"}
-//                        ListElement {title: "Выход"; icon: "qrc:/images/icon-exit-menu.png"}
-//                    }
-//                    delegate: Button {
-//                        width: nav.width
-//                        height: mainWindow.height * 0.125
-//                        text: title
-//                        iconSource: icon
-//                        style: BlackButtonStyle {
-//                        }
-
-//                        onClicked: {
-//                            usedMenu(index)
-//                        }
-//                    }
-//                }
-//            }
-//        }
-
-//        NavigationDrawer {
-//            id: showJobs
-//            //bug№3
-//            _rootItem: addArea
-//            anchors.top: toolBar.bottom
-//            _openMarginSize: 0
-//            position: Qt.RightEdge
-//            /////
-//            property string titleSearch: "null"
-
-//            Rectangle {
-//                anchors.fill: parent
-//                color: "#99958c"
-
-//                TextField {
-//                    id: livesearch
-//                    focus: true
-//                    width: nav.width
-//                    height: mainWindow.height * 0.125
-//                    anchors.top: parent.top
-//                    anchors.bottom: listJobs.top
-//                    anchors.left: parent.left
-//                    anchors.right: parent.right
-//                    placeholderText: "Введите специальность для поиска специалиста"
-////                    style: BlackButtonStyle {
-////                    }
-//                    onTextChanged: db_model_jobs.setFilterFixedString(text)
-//                }
-
-//                ListView {
-//                    id: listJobs
-//                    clip: true
-//                    //interactive: false
-//                    //anchors.fill: parent
-//                    anchors.top: livesearch.bottom
-//                    anchors.bottom: parent.bottom
-//                    anchors.left: parent.left
-//                    anchors.right: parent.right
-
-
-//                    model: db_model_jobs
-
-//                    delegate: Button {
-
-//                        id: delegateListJobs
-//                        width: nav.width
-//                        height: mainWindow.height * 0.125
-//                        text: title
-//                        style: BlackButtonStyle {
-//                        }
-
-//                        onClicked: {
-//                            //console.log(db_model_jobs.get(index));
-//                            getIndexListJobs(title);
-
-//                            //console.log(db_model_jobs.data(ListView.currentIndex,id));
-//                            //console.log(db_model_jobs.getId(id))
-//                            //db_model_jobs.getId(index)
-//                        }
-//                    }
-//                }
-//            }
-//        }
-
-//        NavigationDrawer {
-//            id: showWorkers
-//            //bug№3
-//            _rootItem: addArea
-//            anchors.top: toolBar.bottom
-//            _openMarginSize: 0
-//            position: Qt.RightEdge
-//            /////
-
-//            Rectangle {
-//                anchors.fill: parent
-//                color: "#99958c"
-
-//                ListView {
-//                    id: listWorkers
-//                    clip: true
-//                    //interactive: false
-//                    anchors.fill: parent
-
-//                    model: db_model_workers
-
-//                    delegate: Button {
-//                        width: nav.width
-//                        height: mainWindow.height * 0.125
-
-//                        text: fio
-//                        style: BlackButtonStyle {
-//                        }
-
-//                        onClicked: {
-//                            getIndexListWorkers(index)
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
-

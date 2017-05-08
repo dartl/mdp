@@ -6,6 +6,7 @@
 #include "listmodelworkers.h"
 #include "listmodelrelationsss.h"
 #include "modelgraph.h"
+
 #include <vector>
 #include <string>
 #include <QDebug>
@@ -33,14 +34,15 @@ public:
 
     QList<ModelGraph *> *getGraphConvert();
 
-    void addLeftNodeGraph(QString title);
-    void addRightPartGraph();
-
     void PrintVertixs();
     void PrintPairs();
 
 signals:
     void existingNode();
+
+public slots:
+    bool addLeftNodeGraph(int id);
+    void addRightPartGraph();
 
 };
 

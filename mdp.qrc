@@ -22,5 +22,7 @@
         <file>images/ic-menu.png</file>
         <file>images/ic-delete-node.png</file>
         <file>images/ic-search-spec.png</file>
+        <file>images/ic-check-deleted-node.png</file>
+        <file>images/ic-delete-forever.png</file>
     </qresource>
 </RCC>
