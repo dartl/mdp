@@ -17,6 +17,7 @@ public:
     Node() {}
     Node(Type d){
         data = d;
+        check = true;  // КОСТЫЛЬ!!!!
     }
     Node(Type d, bool c){
         data = d;
@@ -177,7 +178,7 @@ public:
             IteratorVertixs v = beginVertixs();
             for(; v != endVertixs(); v++) {
                 Node<Type> temp =*v;
-                if (temp.getData() == t) {
+                if ((temp.getData() == t) && (!temp.isCheck())) {  // КОСТЫЛЬ!!
                     break;
                 }
             }
