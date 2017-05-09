@@ -119,7 +119,7 @@ namespace bpg {
         void addVertix(Type n){
             auto vertexPos = std::find_if(vertixs.begin(), vertixs.end(), [n](Node<Type>* i)
             {
-              return i->getData() == value;
+              return i->getData() == n;
             });
             try {
                 if(vertexPos != vertixs.end())
