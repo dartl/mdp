@@ -23,9 +23,6 @@ namespace bpg {
         Type data;  // хранимый объект
     public:
         Node() {}
-        Node(Type d){
-            data = d;
-        }
         Node(Type d, bool c){
             data = d;
             check = c;
@@ -198,7 +195,7 @@ namespace bpg {
                 if (n < vertixs.size()) {
                     IteratorVertixs v = beginVertixs();
                     for(int i = 0; i < n;i++){
-                        ++v;
+                        v++;
                     }
                     return *v;
                 } else {
@@ -215,6 +212,27 @@ namespace bpg {
             for(; v != endVertixs(); ++v){
                 Node<Type>* node = *v;
                 if (node->getData() == d && node->isCheck() == ch) {
+                    check = true;
+                    break;
+                }
+            }
+            try {
+                if (check) {
+                    return *v;
+                } else {
+                    THROW_TYPE_NODE_NOT_FOUND("Node not found in graph");
+                }
+            } catch(BipartiteGraphNodeNotFoundException e) {
+                std::cerr << e.printE();
+            }
+        }
+
+        Node<Type>* getVertixNode(Node<Type> d){
+            bool check = false;
+            IteratorVertixs v = beginVertixs();
+            for(; v != endVertixs(); ++v){
+                Node<Type>* node = *v;
+                if (node->getData() == d.getData() && node->isCheck() == d.isCheck()) {
                     check = true;
                     break;
                 }
@@ -302,34 +320,34 @@ namespace bpg {
         // Метод, удаляющий все True вершины
         void removeAllTrue() {
             IteratorVertixs v = beginVertixs();
-            std::vector<Type> myVector;
+            std::vector<Node<Type>> myVector;
             int i = 0;
             for(; v != endVertixs(); v++){
                 Node<Type> node = *v;
                 if (node.isCheck()) {
-                    myVector.insert(myVector.end(),node.getData());
+                    myVector.insert(myVector.end(),node);
                 }
                 i++;
             }
             for(int i = 0; i < myVector.size(); i++) {
-                removeVertixNodeByObject(myVector[i]);
+                removeVertixNode(myVector[i]);
             }
         }
 
         // Метод, удаляющий все False вершины
         void removeAllFalse() {
             IteratorVertixs v = beginVertixs();
-            std::vector<Type> myVector;
+            std::vector<Node<Type>> myVector;
             int i = 0;
             for(; v != endVertixs(); v++){
                 Node<Type> node = *v;
                 if (!node.isCheck()) {
-                    myVector.insert(myVector.end(),node.getData());
+                    myVector.insert(myVector.end(),node);
                 }
                 i++;
             }
             for(int i = 0; i < myVector.size(); i++) {
-                removeVertixNodeByObject(myVector[i]);
+                removeVertixNode(myVector[i]);
             }
         }
 
@@ -576,11 +594,11 @@ namespace bpg {
 
         // Удалить вершину и все связанные ребра по итератору
         void removeVertixNode(IteratorVertixs g){
-            Node<Type> t = (*g)->getData();
+            Node<Type>* t = (*g);
             IteratorVertixs v = beginVertixs();
             for(; v != endVertixs(); v++) {
                 Node<Type>* temp =*v;
-                if (temp->getData() == t.getData()) {
+                if (temp->getData() == t->getData()) {
                     break;
                 }
             }
@@ -634,13 +652,14 @@ namespace bpg {
                 vertixs.push_back(newNode);
             }
             Type first_data, second_data;
+            bool first_check,second_check;
             for (int  i = 0; i < sizeP; i++) {
                 fin >> first_data;
-                fin >> check;
+                fin >> first_check;
                 fin >> second_data;
-                fin >> check;
-                auto pairNode = allocator.allocatePairNode(*getVertixNode(first_data),
-                                                           *getVertixNode(second_data));
+                fin >> second_check;
+                auto pairNode = allocator.allocatePairNode(*getVertixNode(first_data,first_check),
+                                                           *getVertixNode(second_data,second_check));
                 pairs.push_back(pairNode);
             }
             std::cout << sizeV << endl;
