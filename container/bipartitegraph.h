@@ -16,6 +16,104 @@ namespace bpg {
     #define THROW_TYPE_INDEX_OUT_OF_BOUNDS(s) throw BipartiteGraphIndexOutOfBoundsException(s, __LINE__, __FUNCTION__, __TIMESTAMP__);
     #define THROW_TYPE_OBJECT_EXISTS(s) throw BipartiteGraphObjectExistsException(s, __LINE__, __FUNCTION__, __TIMESTAMP__);
 
+    enum ExceptionType {TYPE_EXCEPTION,
+                       TYPE_NODE_NOT_FOUND,
+                       TYPE_NULL_POINTER,
+                       TYPE_INDEX_OUT_OF_BOUNDS,
+                       TYPE_OBJECT_EXISTS};
+
+    class Exception : public std::exception
+    {
+    public:
+        Exception(){
+            text = "";
+            line = 0;
+            function = "";
+            timestamp = "";
+        }
+
+        Exception(std::string text, int line, std::string function, std::string timestamp):text(text),line(line),function(function),timestamp(timestamp) {}
+
+        virtual const char* printE() const throw() {
+            fullString = "\nError - ";
+            switch(type)
+            {
+            case(TYPE_EXCEPTION):
+                fullString += "Exception. ";
+                break;
+            case(TYPE_NODE_NOT_FOUND):
+                fullString += "Node not found. ";
+                break;
+            case(TYPE_NULL_POINTER):
+                fullString += "Null pointer exeption. ";
+                break;
+            case(TYPE_INDEX_OUT_OF_BOUNDS):
+                fullString += "IndexOutOfBounds. ";
+                break;
+            case(TYPE_OBJECT_EXISTS):
+                fullString += "Object already exists. ";
+                break;
+            }
+
+              fullString += "Message - ";
+              fullString += text;
+              fullString += ". Function ";
+              fullString +=function;
+              fullString +=". In line: ";
+              fullString +=line;
+              fullString +=". Build from: ";
+              fullString +=timestamp;
+              fullString +="\n";
+              return fullString.c_str();
+        }
+
+        ExceptionType getExceptionType() const { return type; }
+
+    protected:
+        ExceptionType type;
+        std::string text;
+        int line;
+        std::string function;
+        std::string timestamp;
+        mutable std::string fullString;
+        };
+
+    class BipartiteGraphNodeNotFoundException: public Exception
+    {
+    public:
+        BipartiteGraphNodeNotFoundException(std::string text, int line, std::string function, std::string timestamp):
+            Exception(text, line, function, timestamp) {
+            type = TYPE_NODE_NOT_FOUND;
+        }
+    };
+
+    class BipartiteGraphNullPointerException: public Exception
+    {
+    public:
+        BipartiteGraphNullPointerException(std::string text, int line, std::string function, std::string timestamp):
+            Exception(text, line, function, timestamp) {
+            type = TYPE_NULL_POINTER;
+        }
+    };
+
+    class BipartiteGraphIndexOutOfBoundsException: public Exception
+    {
+    public:
+        BipartiteGraphIndexOutOfBoundsException(std::string text, int line, std::string function, std::string timestamp):
+            Exception(text, line, function, timestamp) {
+            type = TYPE_INDEX_OUT_OF_BOUNDS;
+        }
+    };
+
+    class BipartiteGraphObjectExistsException: public Exception
+    {
+    public:
+        BipartiteGraphObjectExistsException(std::string text, int line, std::string function, std::string timestamp):
+            Exception(text, line, function, timestamp) {
+            type = TYPE_OBJECT_EXISTS;
+        }
+    };
+
     /* Шаблон вершины графа */
     template <class Type> class Node{
     private:
@@ -117,7 +215,7 @@ namespace bpg {
 
         /* Операции с вершинами */
         void addVertix(Type n){
-            auto vertexPos = std::find_if(vertixs.begin(), vertixs.end(), [n](Node<Type>* i)
+            auto vertexPos = find_if(vertixs.begin(), vertixs.end(), [n](Node<Type>* i)
             {
               return i->getData() == n;
             });
@@ -135,7 +233,7 @@ namespace bpg {
             }
         }
         void addVertix(Type n, bool c){
-            auto vertexPos = std::find_if(vertixs.begin(), vertixs.end(), [n,c](Node<Type>* i)
+            auto vertexPos = find_if(vertixs.begin(), vertixs.end(), [n,c](Node<Type>* i)
             {
               return i->getData() == n;
             });
@@ -256,7 +354,7 @@ namespace bpg {
                         ++v;
                     }
                     std::list<PairNode<Type>*> list_remove = getPairsList(*v);
-                    for (std::list<PairNode<Type>*>::iterator it=list_remove.begin(); it != list_remove.end(); ++it) {
+                    for (typename std::list<PairNode<Type>*>::iterator it=list_remove.begin(); it != list_remove.end(); ++it) {
                         allocator.deletePair(*it);
                         pairs.remove(*it);
                     }
@@ -270,8 +368,8 @@ namespace bpg {
             }
         }
 
-        // Удалить вершину и все связанные ребра по Type
-        void removeVertixNodeByObject(Type t){
+        // Удалить вершину и все связанные ребра по Type. Не проверяет bool
+        /*void removeVertixNodeByObject(Type t){
             bool check = false;
             IteratorVertixs v = beginVertixs();
             for(; v != endVertixs(); v++) {
@@ -296,14 +394,14 @@ namespace bpg {
             } catch(Exception e) {
                 std::cerr << e.printE();
             }
-        }
+        }*/
 
         // Удалить вершину и все связанные ребра по Node
         void removeVertixNode(Node<Type>* t){
             try {
                 if (checkVertix(t)) {
                     std::list<PairNode<Type>*> list_remove = getPairsList(t);
-                    for (std::list<PairNode<Type>*>::iterator it=list_remove.begin(); it != list_remove.end(); ++it) {
+                    for (typename std::list<PairNode<Type>*>::iterator it=list_remove.begin(); it != list_remove.end(); ++it) {
                         allocator.deletePair(*it);
                         pairs.remove(*it);
                     }
@@ -436,7 +534,7 @@ namespace bpg {
 
         /* Операции с ребрами */
         void addPair(Node<Type>* f, Node<Type>* s){
-            auto vertexPos = std::find_if(pairs.begin(), pairs.end(), [f,s](PairNode<Type>* i)
+            auto vertexPos = find_if(pairs.begin(), pairs.end(), [f,s](PairNode<Type>* i)
             {
               return i->getFisrt()->getData() == f->getData() && i->getSecond()->getData() == s->getData();
             });
@@ -578,7 +676,7 @@ namespace bpg {
 
             PairNode<Type>* operator->()
             {
-                else return current;
+                return current;
             }
 
             bool isEmpty() {
@@ -623,11 +721,11 @@ namespace bpg {
             if (fout.is_open()) {
                 fout << vertixs.size() << "\n";
                 fout << pairs.size() << "\n";
-                std::for_each (vertixs.begin(), vertixs.end(), [&fout](Node<Type>* i) {
+                for_each (vertixs.begin(), vertixs.end(), [&fout](Node<Type>* i) {
                     fout << i << "\n";
                 });
 
-                std::for_each (pairs.begin(), pairs.end(), [&fout](PairNode<Type>* i) {
+                for_each (pairs.begin(), pairs.end(), [&fout](PairNode<Type>* i) {
                     fout << i->getFisrt() << "\n";
                     fout << i->getSecond() << "\n";
                 });
@@ -662,22 +760,22 @@ namespace bpg {
                                                            *getVertixNode(second_data,second_check));
                 pairs.push_back(pairNode);
             }
-            std::cout << sizeV << endl;
-            std::cout << sizeP << endl;
+            std::cout << sizeV << std::endl;
+            std::cout << sizeP << std::endl;
         }
 
         friend std::ostream& operator<<(std::ostream& out, BipartiteGraph<Type>& dt)
         {
-            out << dt.vertixs.size() << endl;
-            out << dt.pairs.size()<< endl;
-            out << "Vertixs:"<< endl;
-            std::for_each (dt.vertixs.begin(), dt.vertixs.end(), [&out](Node<Type>* i) {
-                out << i<< endl;
+            out << dt.vertixs.size() << std::endl;
+            out << dt.pairs.size()<< std::endl;
+            out << "Vertixs:"<< std::endl;
+            for_each (dt.vertixs.begin(), dt.vertixs.end(), [&out](Node<Type>* i) {
+                out << i<< std::endl;
             });
-            out << "Pairs:"<< endl;
-            std::for_each (dt.pairs.begin(), dt.pairs.end(), [&out](PairNode<Type>* i) {
-                out << i->getFisrt()<< endl;
-                out << i->getSecond()<< endl;
+            out << "Pairs:"<< std::endl;
+            for_each (dt.pairs.begin(), dt.pairs.end(), [&out](PairNode<Type>* i) {
+                out << i->getFisrt()<< std::endl;
+                out << i->getSecond()<< std::endl;
             });
             return out;
         }
@@ -695,9 +793,9 @@ namespace bpg {
             for(int i = 0; i < sizeP; i++) {
                 is >> node;
             }
-            std::for_each (dt.pairs.begin(), dt.pairs.end(), [&out](PairNode<Type>* i) {
-                out << i->getFisrt();
-                out << i->getSecond();
+            for_each (dt.pairs.begin(), dt.pairs.end(), [&is](PairNode<Type>* i) {
+                is >> i->getFisrt();
+                is >> i->getSecond();
             });
             return is;
         }
@@ -766,10 +864,10 @@ private:
             }
 
             void deleteAll() {
-                std::for_each(vertexes_pool.begin(), vertexes_pool.end(),
+                for_each(vertexes_pool.begin(), vertexes_pool.end(),
                                   [](Node<Type>* i) {delete i;});
 
-                std::for_each(pairs_pool.begin(), pairs_pool.end(),
+                for_each(pairs_pool.begin(), pairs_pool.end(),
                               [](PairNode<Type>* i) {delete i;});
                 vertexes_pool.clear();
                 pairs_pool.clear();
@@ -785,103 +883,7 @@ private:
         Allocator allocator;
     };
 
-    enum ExceptionType {TYPE_EXCEPTION,
-                       TYPE_NODE_NOT_FOUND,
-                       TYPE_NULL_POINTER,
-                       TYPE_INDEX_OUT_OF_BOUNDS,
-                       TYPE_OBJECT_EXISTS};
 
-    class Exception : public std::exception
-    {
-    public:
-        Exception(){
-            text = "";
-            line = 0;
-            function = "";
-            timestamp = "";
-        }
-
-        Exception(std::string text, int line, std::string function, std::string timestamp):text(text),line(line),function(function),timestamp(timestamp) {}
-
-        virtual const char* printE() const throw() {
-            fullString = "\nError - ";
-            switch(type)
-            {
-            case(TYPE_EXCEPTION):
-                fullString += "Exception. ";
-                break;
-            case(TYPE_NODE_NOT_FOUND):
-                fullString += "Node not found. ";
-                break;
-            case(TYPE_NULL_POINTER):
-                fullString += "Null pointer exeption. ";
-                break;
-            case(TYPE_INDEX_OUT_OF_BOUNDS):
-                fullString += "IndexOutOfBounds. ";
-                break;
-            case(TYPE_OBJECT_EXISTS):
-                fullString += "Object already exists. ";
-                break;
-            }
-
-              fullString += "Message - ";
-              fullString += text;
-              fullString += ". Function ";
-              fullString +=function;
-              fullString +=". In line: ";
-              fullString +=line;
-              fullString +=". Build from: ";
-              fullString +=timestamp;
-              fullString +="\n";
-              return fullString.c_str();
-        }
-
-        ExceptionType getExceptionType() const { return type; }
-
-    protected:
-        ExceptionType type;
-        std::string text;
-        int line;
-        std::string function;
-        std::string timestamp;
-        mutable std::string fullString;
-        };
-
-    class BipartiteGraphNodeNotFoundException: public Exception
-    {
-    public:
-        BipartiteGraphNodeNotFoundException(std::string text, int line, std::string function, std::string timestamp):
-            Exception(text, line, function, timestamp) {
-            type = TYPE_NODE_NOT_FOUND;
-        }
-    };
-
-    class BipartiteGraphNullPointerException: public Exception
-    {
-    public:
-        BipartiteGraphNullPointerException(std::string text, int line, std::string function, std::string timestamp):
-            Exception(text, line, function, timestamp) {
-            type = TYPE_NULL_POINTER;
-        }
-    };
-
-    class BipartiteGraphIndexOutOfBoundsException: public Exception
-    {
-    public:
-        BipartiteGraphIndexOutOfBoundsException(std::string text, int line, std::string function, std::string timestamp):
-            Exception(text, line, function, timestamp) {
-            type = TYPE_INDEX_OUT_OF_BOUNDS;
-        }
-    };
-
-    class BipartiteGraphObjectExistsException: public Exception
-    {
-    public:
-        BipartiteGraphObjectExistsException(std::string text, int line, std::string function, std::string timestamp):
-            Exception(text, line, function, timestamp) {
-            type = TYPE_OBJECT_EXISTS;
-        }
-    };
 
 }
 
