@@ -437,11 +437,11 @@ namespace bpg {
         // Метод, удаляющий все False вершины
         void removeAllFalse() {
             IteratorVertixs v = beginVertixs();
-            std::vector<Node<Type>> myVector;
+            std::vector<Node<Type>*> myVector;
             int i = 0;
             for(; v != endVertixs(); v++){
-                Node<Type> node = *v;
-                if (!node.isCheck()) {
+                Node<Type>* node = *v;
+                if (!node->isCheck()) {
                     myVector.insert(myVector.end(),node);
                 }
                 i++;
@@ -842,7 +842,7 @@ private:
             }
 
             void deleteVertix(Node<Type>* d) {
-                auto pos = std::find(vertexes_pool.begin(), vertexes_pool.end(), d);
+                auto pos = find(vertexes_pool.begin(), vertexes_pool.end(), d);
 
                 if(pos == vertexes_pool.end())
                 {
@@ -854,7 +854,7 @@ private:
             }
 
             void deletePair(PairNode<Type>* d) {
-                auto pos = std::find(pairs_pool.begin(), pairs_pool.end(), d);
+                auto pos = find(pairs_pool.begin(), pairs_pool.end(), d);
 
                 if(pos == pairs_pool.end())
                 {
