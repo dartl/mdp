@@ -7,6 +7,8 @@ HandlerSignals::HandlerSignals(QObject *parent) : QObject(parent)
 
 void HandlerSignals::menu(const int index) {
     switch (index) {
+    case 0:
+        break;
     case 1:
         algorithm->addLeftNodeGraph(2);
         algorithm->addRightPartGraph();

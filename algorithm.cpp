@@ -71,7 +71,7 @@ bool Algorithm::addLeftNodeGraph(int id)
     if (!graph->checkVertix(id))
     {
         graph->addVertix(id, true);
-         PrintVertixs();
+         //PrintVertixs();
          return true;
     }
     else
@@ -101,11 +101,12 @@ void Algorithm::addRightPartGraph()
                 }
             }
             graph->addVertix(currWorkerMax, false);
-            graph->addPair(&(graph->getVertixNode((*i).getData())), &(graph->getVertixNode(currWorkerMax)));
+            graph->addPair(&(graph->getVertixNode((*i).getData())), &(graph->getVertixNode((currWorkerMax))));
+            //graph->addPair(&(graph->getVertixNode((*i).getData(),true)), &(graph->getVertixNode((currWorkerMax),false)));
         }
     }
-    PrintVertixs();
-    PrintPairs();
+    //PrintVertixs();
+    //PrintPairs();
 }
 
 

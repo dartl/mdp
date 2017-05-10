@@ -11,7 +11,9 @@ ApplicationWindow {
 //    signal getIndexListJobs(string title)
 //    signal getIndexListWorkers(int index)
 
-    signal updateRightNodesGraph;
+    signal updateRightNodesGraph
+
+    property var addArea_pointer: null
 
     visible: true
     id: mainWindow
@@ -34,7 +36,7 @@ ApplicationWindow {
         id:timer
     }
 
-    //delay simulator for LoadIndicator.qml
+//    delay simulator for LoadIndicator.qml
     function delay(delayTime, cb) {
         timer.interval = delayTime;
         timer.repeat = false;
@@ -52,6 +54,9 @@ ApplicationWindow {
 //        }
 
         stackView.replace(addArea);
+
+        addArea_pointer = stackView.currentItem
+
         if (!addNode_button.visible)
             addNode_button.visible = true;
 
@@ -70,6 +75,10 @@ ApplicationWindow {
             stackView.currentItem.graph.deleteMode = true;
         }
 
+        label_delete.text += " (" + stackView.currentItem.graph.deleteNodesList.length + ")"
+        //console.log("DeleteNodesList in main.qml " + addArea.graph.deleteNodesList.length)
+        //console.log("addArea in main.qml " + addArea_pointer)
+        //console.log("stackView in main.qml " + stackView.currentItem)
         console.log("ActiveDeleteMode")
     }
 
@@ -82,6 +91,12 @@ ApplicationWindow {
         }
 
         console.log("InActiveDeleteMode")
+
+    }
+
+    //update text to deleteNode_button
+    function onUpdateTextDeleteNodeButton() {
+        label_delete.text = qsTr("Delete") + " (" + addArea_pointer.graph.deleteNodesList.length + ")"
     }
 
     Settings {
@@ -124,14 +139,28 @@ ApplicationWindow {
                 }
                 onClicked: {
                             if (stackView.currentItem.graph.searchRightNodesMode) {
-                                stackView.push(loadIndicator)
-                                delay(800, function() {
-                                    stackView.pop()
+//                                stackView.push(loadIndicator)
+//                                delay(800, function() {
+//                                    stackView.pop()
 
-                                    updateRightNodesGraph.connect(stackView.currentItem.graph.onUpdateRightNodesGraph)
-                                    updateRightNodesGraph()
-                                    updateRightNodesGraph.disconnect(stackView.currentItem.graph.onUpdateRightNodesGraph)
-                               })
+////                                    updateRightNodesGraph.connect(stackView.currentItem.graph.onUpdateRightNodesGraph)
+////                                    updateRightNodesGraph()
+////                                    updateRightNodesGraph.disconnect(stackView.currentItem.graph.onUpdateRightNodesGraph)
+//                               })
+//                                stackView.pop()
+//                                stackView.push(loadIndicator)
+
+//                                updateRightNodesGraph.connect(stackView.currentItem.graph.onUpdateRightNodesGraph)
+//                                delay(800,function() {
+//                                    updateRightNodesGraph()
+//                                })
+//                                //stackView.pop()
+//                                stackView.push(loadIndicator)
+
+//                                stackView.pop()
+                                updateRightNodesGraph.connect(stackView.currentItem.graph.onUpdateRightNodesGraph)
+                                updateRightNodesGraph()
+                                updateRightNodesGraph.disconnect(stackView.currentItem.graph.onUpdateRightNodesGraph)
                             }
 
 
@@ -175,6 +204,7 @@ ApplicationWindow {
                 }
                 onClicked: {
                     optionsDelete.open()
+                    onUpdateTextDeleteNodeButton()
                 }
 
                 Menu {
@@ -196,11 +226,18 @@ ApplicationWindow {
                             }
 
                             Label {
-                                text: qsTr("Delete") + qmlTranslator.emptyString + " (5)"
+                                id: label_delete
+                                text: qsTr("Delete") + qmlTranslator.emptyString
                                 color: Material.color(Material.Red)
                                 font.pixelSize: 20
                                 Layout.fillWidth: true
                             }
+                        }
+
+                        onTriggered: {
+                            addArea_pointer.graph.deleteNodesList.forEach(function(item,i,deleteNodesList){
+                                console.log("DeleteNodeList: " + item.id + " " + item.check)
+                            })
                         }
                     }
                 }
