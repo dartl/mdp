@@ -24,23 +24,23 @@ QList<ModelGraph *> *Algorithm::getGraphConvert()
     for (BipartiteGraph<int>::IteratorVertixs i = (*graph).beginVertixs(); i != (*graph).endVertixs(); ++i)
     {
         ModelGraph* tempModel = new ModelGraph();
-        if ((*i).isCheck())
+        if ((*i)->isCheck())
         {
             bool nodeInPair = false;
             for (BipartiteGraph<int>::IteratorPairs p = (*graph).beginPairs(); p != (*graph).endPairs(); ++p)
             {
-                if ((*p).getFisrt().getData() == (*i).getData())
+                if ((*p)->getFisrt()->getData() == (*i)->getData())
                 {
 
-                    tempModel->setIdJob((*p).getFisrt().getData());
-                    tempModel->setIdWorker((*p).getSecond().getData());
+                    tempModel->setIdJob((*p)->getFisrt()->getData());
+                    tempModel->setIdWorker((*p)->getSecond()->getData());
                     nodeInPair = true;
                 }
             }
             if (!nodeInPair)
             {
 
-                tempModel->setIdJob((*i).getData());
+                tempModel->setIdJob((*i)->getData());
                 tempModel->setIdWorker(-1);
             }
             tempList->append(tempModel);
@@ -54,7 +54,7 @@ void Algorithm::PrintVertixs()
 {
     qDebug() << "List all vertixs:";
     for (BipartiteGraph<int>::IteratorVertixs i = (*graph).beginVertixs();i != (*graph).endVertixs(); ++i) {
-          qDebug() << "(" << (*i).getData() << ',' << (*i).isCheck() << ")";
+          qDebug() << "(" << (*i)->getData() << ',' << (*i)->isCheck() << ")";
     }
 }
 
@@ -62,20 +62,25 @@ void Algorithm::PrintPairs()
 {
     qDebug() << "List all pairs:";
     for (BipartiteGraph<int>::IteratorPairs p = (*graph).beginPairs();p != (*graph).endPairs(); ++p) {
-        qDebug() << (*p).getFisrt().getData() << ' ' << (*p).getSecond().getData() << ' ';
+        qDebug() << (*p)->getFisrt()->getData() << ' ' << (*p)->getSecond()->getData() << ' ';
     }
 }
 
 bool Algorithm::addLeftNodeGraph(int id)
 {
-    if (!graph->checkVertix(id))
+    Node<int>* temp = new Node<int>(id, true);
+    if (!graph->checkVertix(temp))
     {
         graph->addVertix(id, true);
          PrintVertixs();
+         delete temp;
          return true;
     }
     else
+    {
+        delete temp;
         return false;
+    }
 }
 
 void Algorithm::addRightPartGraph()
@@ -83,10 +88,11 @@ void Algorithm::addRightPartGraph()
     //при уже существующем графе??????
     this->graph->removeAllFalse();
 
+
     for (BipartiteGraph<int>::IteratorVertixs i = (*graph).beginVertixs(); i != (*graph).endVertixs(); i++)
     {
-        if ((*i).isCheck()) {
-            int jobsId = (*i).getData();
+        if ((*i)->isCheck()) {
+            int jobsId = (*i)->getData();
             int currLevelMax = -1;
             int currWorkerMax = -1;
             for (int j = 0; j < this->relations->elementsCount(); j++)
@@ -101,9 +107,16 @@ void Algorithm::addRightPartGraph()
                 }
             }
             graph->addVertix(currWorkerMax, false);
-            graph->addPair(&(graph->getVertixNode((*i).getData(), true)), &(graph->getVertixNode(currWorkerMax, false)));
+            graph->addPair(graph->getVertixNode((*i)->getData(), true), graph->getVertixNode(currWorkerMax, false));
         }
     }
+    PrintVertixs();
+    PrintPairs();
+}
+
+void Algorithm::clearGraph()
+{
+    this->graph->clearGraph();
     PrintVertixs();
     PrintPairs();
 }
