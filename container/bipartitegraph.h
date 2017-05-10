@@ -214,7 +214,8 @@ namespace bpg {
         }
 
         /* Операции с вершинами */
-        void addVertix(Type n){
+        // Метод принимает только тип, соответственно создает вершину без bool
+        /*void addVertix(Type n){
             auto vertexPos = find_if(vertixs.begin(), vertixs.end(), [n](Node<Type>* i)
             {
               return i->getData() == n;
@@ -231,7 +232,7 @@ namespace bpg {
             } catch(Exception e) {
                 std::cerr << e.printE();
             }
-        }
+        }*/
         void addVertix(Type n, bool c){
             auto vertexPos = find_if(vertixs.begin(), vertixs.end(), [n,c](Node<Type>* i)
             {
@@ -325,7 +326,8 @@ namespace bpg {
             }
         }
 
-        Node<Type>* getVertixNode(Node<Type> d){
+        // Тупизм - вернуть значение Node<Type> по нему же самому
+        /*Node<Type>* getVertixNode(Node<Type> d){
             bool check = false;
             IteratorVertixs v = beginVertixs();
             for(; v != endVertixs(); ++v){
@@ -344,7 +346,7 @@ namespace bpg {
             } catch(BipartiteGraphNodeNotFoundException e) {
                 std::cerr << e.printE();
             }
-        }
+        }*/
 
         void removeVertixNodeByNumber(int n){
             try {
@@ -882,9 +884,6 @@ private:
 private:
         Allocator allocator;
     };
-
-
-
 }
 
 #endif // BIPARTITEGRAPH_H
