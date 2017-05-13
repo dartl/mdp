@@ -55,7 +55,6 @@ Pane {
     }
 
     function onUpdateRightNodesGraph() {
-        console.log("call onUpdateRightNodesGraph")
         if (editingMode) {
             data_graph.addRightPartGraph()
             graph.update()
@@ -153,7 +152,6 @@ Pane {
                                             checkDeletedNodeRight.visible = true
                                             deleteNodesList.push({id: modelData.idWorker, check: false})
                                         }
-
 //                                        updateTextDeleteNodeButton.connect(mainWindow.onUpdateTextDeleteNodeButton)
 //                                        updateTextDeleteNodeButton()
 //                                        updateTextDeleteNodeButton.disconnect(mainWindow.onUpdateTextDeleteNodeButton)
@@ -253,6 +251,15 @@ Pane {
                                 }
                             }
                         }
+                    }
+
+                    Edge {
+                        id: edge_graph
+                        visible: nodeRight.visible
+
+                        object_1: nodeLeft
+                        object_2: nodeRight
+                        colorEdge: Material.color(Material.BlueGrey)
                     }
                 }
             }

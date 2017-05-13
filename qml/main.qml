@@ -139,28 +139,18 @@ ApplicationWindow {
                 }
                 onClicked: {
                             if (stackView.currentItem.graph.searchRightNodesMode) {
-//                                stackView.push(loadIndicator)
-//                                delay(800, function() {
-//                                    stackView.pop()
+                                stackView.push(loadIndicator)
+                                delay(800, function() {
+                                    stackView.pop()
 
-////                                    updateRightNodesGraph.connect(stackView.currentItem.graph.onUpdateRightNodesGraph)
-////                                    updateRightNodesGraph()
-////                                    updateRightNodesGraph.disconnect(stackView.currentItem.graph.onUpdateRightNodesGraph)
-//                               })
-//                                stackView.pop()
-//                                stackView.push(loadIndicator)
+                                    updateRightNodesGraph.connect(stackView.currentItem.graph.onUpdateRightNodesGraph)
+                                    updateRightNodesGraph()
+                                    updateRightNodesGraph.disconnect(stackView.currentItem.graph.onUpdateRightNodesGraph)
+                               })
 
 //                                updateRightNodesGraph.connect(stackView.currentItem.graph.onUpdateRightNodesGraph)
-//                                delay(800,function() {
-//                                    updateRightNodesGraph()
-//                                })
-//                                //stackView.pop()
-//                                stackView.push(loadIndicator)
-
-//                                stackView.pop()
-                                updateRightNodesGraph.connect(stackView.currentItem.graph.onUpdateRightNodesGraph)
-                                updateRightNodesGraph()
-                                updateRightNodesGraph.disconnect(stackView.currentItem.graph.onUpdateRightNodesGraph)
+//                                updateRightNodesGraph()
+//                                updateRightNodesGraph.disconnect(stackView.currentItem.graph.onUpdateRightNodesGraph)
                             }
 
 
@@ -321,6 +311,8 @@ ApplicationWindow {
                                 stackView.currentItem.graph.visibleGraphMode = false
                             }
                         }
+
+
                         break;
                     case 1:
                         if (ListView.currentIndex != index) {

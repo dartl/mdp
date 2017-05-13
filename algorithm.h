@@ -43,7 +43,7 @@ signals:
 public slots:
     bool addLeftNodeGraph(int id);
     void addRightPartGraph();
-
+    void clearGraph();
 };
 
 #endif // ALGORITHM_H
