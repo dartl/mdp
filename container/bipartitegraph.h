@@ -144,15 +144,15 @@ namespace bpg {
             out << dt->isCheck();
             return out;
         }
-        bool operator==(const Node<Type>& other)
+        friend bool operator==(Node<Type>& a, Node<Type>& other)
         {
-            return (data ==
-                    other.getData()) && (check == other.isCheck());
+            return (a.getData() ==
+                    other.getData()) && (a.isCheck() == other.isCheck());
         }
-        bool operator!=(const Node<Type>& other)
+        /*friend bool operator!=(const Node<Type>& other)
         {
             return !(this == other);
-        }
+        }*/
     };
 
     /* Шаблон ребра графа(пара вершин) */
@@ -233,23 +233,24 @@ namespace bpg {
                 std::cerr << e.printE();
             }
         }*/
-        void addVertix(Type n, bool c){
+        bool addVertix(Type n, bool c){
             auto vertexPos = find_if(vertixs.begin(), vertixs.end(), [n,c](Node<Type>* i)
             {
-              return i->getData() == n;
+              return i->getData() == n && i->isCheck() == c;
             });
 
             try {
                 if(vertexPos != vertixs.end())
                 {
                   THROW_TYPE_OBJECT_EXISTS("Vertex already exist");
-                  return;
                 } else {
                     auto newNode = allocator.allocateVertix(n,c);
                     vertixs.push_back(newNode);
+                    return true;
                 }
             } catch(Exception e) {
                 std::cerr << e.printE();
+                return false;
             }
         }
         void popFrontVertix() {
@@ -275,18 +276,6 @@ namespace bpg {
             } catch(Exception e) {
                 std::cerr << e.printE();
             }
-        }
-
-        // Проверяет, принадлежит ли узел к графу
-        bool checkVertix(Node<Type>* vertix) {
-            IteratorVertixs v = beginVertixs();
-            for(; v != endVertixs(); ++v){
-                Node<Type>* temp = *v;
-                if (vertix == temp) {
-                    return true;
-                }
-            }
-            return false;
         }
 
         Node<Type>* getVertixNodeByNumber(int n){
