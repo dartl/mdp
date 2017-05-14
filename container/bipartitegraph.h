@@ -10,6 +10,7 @@
 
 
 namespace bpg {
+
     #define THROW_TYPE_EXCEPTION(s) throw Exception(s, __LINE__, __FUNCTION__, __TIMESTAMP__)
     #define THROW_TYPE_NODE_NOT_FOUND(s) throw BipartiteGraphNodeNotFoundException(s, __LINE__, __FUNCTION__, __TIMESTAMP__)
     #define THROW_TYPE_NULL_POINTER(s) throw BipartiteGraphNullPointerException(s, __LINE__, __FUNCTION__, __TIMESTAMP__);
@@ -194,7 +195,7 @@ namespace bpg {
     };
 
     /* Шаблон Двудольного графа */
-    typedef std::ostream &(*PTF) (std::ostream &, int);
+
     template <class Type> class BipartiteGraph
     {
     private:
@@ -321,28 +322,6 @@ namespace bpg {
             }
         }
 
-        // Тупизм - вернуть значение Node<Type> по нему же самому
-        /*Node<Type>* getVertixNode(Node<Type> d){
-            bool check = false;
-            IteratorVertixs v = beginVertixs();
-            for(; v != endVertixs(); ++v){
-                Node<Type>* node = *v;
-                if (node->getData() == d.getData() && node->isCheck() == d.isCheck()) {
-                    check = true;
-                    break;
-                }
-            }
-            try {
-                if (check) {
-                    return *v;
-                } else {
-                    THROW_TYPE_NODE_NOT_FOUND("Node not found in graph");
-                }
-            } catch(BipartiteGraphNodeNotFoundException e) {
-                std::cerr << e.printE();
-            }
-        }*/
-
         void removeVertixNodeByNumber(int n){
             try {
                 if (n <= vertixs.size()) {
@@ -365,38 +344,16 @@ namespace bpg {
             }
         }
 
-        // Удалить вершину и все связанные ребра по Type. Не проверяет bool
-        /*void removeVertixNodeByObject(Type t){
-            bool check = false;
-            IteratorVertixs v = beginVertixs();
-            for(; v != endVertixs(); v++) {
-                Node<Type>* temp =*v;
-                if (temp->getData() == t) {
-                    check = true;
-                    break;
-                }
-            }
-            try {
-                if (check) {
-                    std::list<PairNode<Type>*> list_remove = getPairsList(*v);
-                    for (std::list<PairNode<Type>*>::iterator it=list_remove.begin(); it != list_remove.end(); ++it) {
-                        allocator.deletePair(*it);
-                        pairs.remove(*it);
-                    }
-                    allocator.deleteVertix(*v);
-                    vertixs.remove(*v);
-                } else {
-                    THROW_TYPE_NODE_NOT_FOUND("Such an object was not found in the list");
-                }
-            } catch(Exception e) {
-                std::cerr << e.printE();
-            }
-        }*/
-
         // Удалить вершину и все связанные ребра по Node
         void removeVertixNode(Node<Type>* t){
             try {
-                if (checkVertix(t)) {
+                auto vertexPos = find_if(vertixs.begin(), vertixs.end(), [t](Node<Type>* i)
+                {
+                  return i == t;
+                });
+                if (vertexPos == vertixs.end()) {
+                    THROW_TYPE_NODE_NOT_FOUND("Such an object was not found in the list");
+                } else {
                     std::list<PairNode<Type>*> list_remove = getPairsList(t);
                     for (typename std::list<PairNode<Type>*>::iterator it=list_remove.begin(); it != list_remove.end(); ++it) {
                         allocator.deletePair(*it);
@@ -404,8 +361,6 @@ namespace bpg {
                     }
                     allocator.deleteVertix(t);
                     vertixs.remove(t);
-                } else {
-                    THROW_TYPE_NODE_NOT_FOUND("Such an object was not found in the list");
                 }
             } catch(Exception e) {
                 std::cerr << e.printE();
@@ -874,7 +829,6 @@ private:
             std::list<Node<Type>*> vertexes_pool;
             std::list<PairNode<Type>*> pairs_pool;
         };
-
 
 private:
         Allocator allocator;
