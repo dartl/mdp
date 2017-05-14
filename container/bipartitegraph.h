@@ -194,6 +194,7 @@ namespace bpg {
     };
 
     /* Шаблон Двудольного графа */
+    typedef std::ostream &(*PTF) (std::ostream &, int);
     template <class Type> class BipartiteGraph
     {
     private:
@@ -201,6 +202,11 @@ namespace bpg {
         std::list<PairNode<Type>*> pairs;    // список ребер графа
     public:
         BipartiteGraph() {}
+        // размер списка вершин
+        int getSizeVertixs() {
+            return vertixs.size();
+        }
+
         /* Инвариант проверки, что граф двудольный */
         bool invariantBigraph() {
             IteratorPairs ip = beginPairs();
