@@ -221,8 +221,7 @@ namespace bpg {
         }
 
         /* Операции с вершинами */
-        // добавление вершины
-        bool add(Type n, bool c){
+        bool addVertix(Type n, bool c){
             auto vertexPos = find_if(vertixs.begin(), vertixs.end(), [n,c](Node<Type>* i)
             {
               return i->getData() == n && i->isCheck() == c;
