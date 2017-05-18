@@ -221,25 +221,6 @@ namespace bpg {
         }
 
         /* Операции с вершинами */
-        // Метод принимает только тип, соответственно создает вершину без bool
-        /*void addVertix(Type n){
-            auto vertexPos = find_if(vertixs.begin(), vertixs.end(), [n](Node<Type>* i)
-            {
-              return i->getData() == n;
-            });
-            try {
-                if(vertexPos != vertixs.end())
-                {
-                  THROW_TYPE_OBJECT_EXISTS("Vertex already exist");
-                  return;
-                } else {
-                    auto newNode = allocator.allocateVertix(n);
-                    vertixs.push_back(newNode);
-                }
-            } catch(Exception e) {
-                std::cerr << e.printE();
-            }
-        }*/
         bool addVertix(Type n, bool c){
             auto vertexPos = find_if(vertixs.begin(), vertixs.end(), [n,c](Node<Type>* i)
             {
@@ -370,15 +351,7 @@ namespace bpg {
         // Метод, удаляющий все True вершины
         void removeAllTrue() {
             IteratorVertixs v = beginVertixs();
-            std::vector<Node<Type>> myVector;
-            int i = 0;
-            for(; v != endVertixs(); v++){
-                Node<Type> node = *v;
-                if (node.isCheck()) {
-                    myVector.insert(myVector.end(),node);
-                }
-                i++;
-            }
+            std::vector<Node<Type>*> myVector = findAllNode(true);
             for(int i = 0; i < myVector.size(); i++) {
                 removeVertixNode(myVector[i]);
             }
@@ -387,18 +360,23 @@ namespace bpg {
         // Метод, удаляющий все False вершины
         void removeAllFalse() {
             IteratorVertixs v = beginVertixs();
+            std::vector<Node<Type>*> myVector = findAllNode(false);
+            for(int i = 0; i < myVector.size(); i++) {
+                removeVertixNode(myVector[i]);
+            }
+        }
+
+        std::vector<Node<Type>*> findAllNode(bool c) {
             std::vector<Node<Type>*> myVector;
             int i = 0;
             for(; v != endVertixs(); v++){
                 Node<Type>* node = *v;
-                if (!node->isCheck()) {
+                if (c == node->isCheck()) {
                     myVector.insert(myVector.end(),node);
                 }
                 i++;
             }
-            for(int i = 0; i < myVector.size(); i++) {
-                removeVertixNode(myVector[i]);
-            }
+            return myVector;
         }
 
         // Метод, возвращающий список ребер выбранной вершины
