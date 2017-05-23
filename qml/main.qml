@@ -26,8 +26,8 @@ ApplicationWindow {
     Material.primary: Material.BlueGrey
 
     //flag and path to open file
-    property bool isOpenFile : false
-    property string pathOpenFile: ""
+    property bool isOpenExistingFile : false
+    property string pathExistingFile: ""
 
     //timer for delay simulator
     Timer {
@@ -44,16 +44,24 @@ ApplicationWindow {
 
     //add slots for Graph.qml
     function onActiveAddArea() {
-//        if (stackView.depth !== 0) {
-//            if (stackView.currentItem.graph.editingMode) {
-//                dialogEditingMode.open()
-//                stackView.currentItem.graph.editingMode = false;
-//            }
-//        }
 
-        stackView.replace(addArea);
+        //очищение текущей сессии
+        if (stackView.currentItem === addArea_pointer) {
 
-        addArea_pointer = stackView.currentItem
+            addArea_pointer.graph.editingMode = false
+            addArea_pointer.graph.visibleGraphMode = false
+            addArea_pointer.graph.searchRightNodesMode = false
+
+            data_graph.clearGraph()
+
+            addArea_pointer.graph.thisGraph.update()
+
+        }
+        else {
+            stackView.replace(addArea);
+
+            addArea_pointer = stackView.currentItem
+        }
 
         if (!addNode_button.visible)
             addNode_button.visible = true;
@@ -73,11 +81,7 @@ ApplicationWindow {
             stackView.currentItem.graph.deleteMode = true;
         }
 
-        label_delete.text += " (" + stackView.currentItem.graph.deleteNodesList.length + ")"
-        //console.log("DeleteNodesList in main.qml " + addArea.graph.deleteNodesList.length)
-        //console.log("addArea in main.qml " + addArea_pointer)
-        //console.log("stackView in main.qml " + stackView.currentItem)
-        console.log("ActiveDeleteMode")
+        label_delete.text += " (" + addArea_pointer.graph.deleteNodesList.length + ")"
     }
 
     //mode in Graph.qml
@@ -87,9 +91,6 @@ ApplicationWindow {
             addNode_button.anchors.right = additional_menu.left;
             addArea_pointer.graph.deleteMode = false;
         }
-
-        console.log("InActiveDeleteMode")
-
     }
 
     //update text to deleteNode_button
@@ -175,7 +176,7 @@ ApplicationWindow {
                     source: "qrc:/images/ic-add-node.png"
                 }
                 onClicked: {
-                    stackView.currentItem.drawer_showJobs.open()
+                    addArea_pointer.drawer_showJobs.open()
                     //stackView.currentItem.graph.editingMode = true
                 }
             }
@@ -336,11 +337,11 @@ ApplicationWindow {
                         if (ListView.currentIndex != index) {
                             ListView.currentIndex = index
 
-                            if (!isOpenFile) {
+                            if (!isOpenExistingFile) {
                                 saveFileDialog.open()
                             }
                             else {
-                                usedMenu(3,pathOpenFile)
+                                usedMenu(3,pathExistingFile)
                             }
                         }
                         break;
@@ -615,8 +616,10 @@ ApplicationWindow {
             addArea_pointer.graph.visibleGraphMode = true
             addArea_pointer.graph.thisGraph.update()
 
-            isOpenFile = true
-            pathOpenFile = fileDialog.fileUrl
+            if (!isOpenExistingFile) {
+                isOpenExistingFile = true
+                pathExistingFile = fileDialog.fileUrl
+            }
 
             nav.close()
         }
@@ -634,6 +637,12 @@ ApplicationWindow {
         nameFilters: [ "Model files (*.mdp)", "All files (*)" ]
         onAccepted: {
             usedMenu(3,saveFileDialog.fileUrl)
+
+
+            if (!isOpenExistingFile) {
+                isOpenExistingFile = true
+                pathExistingFile = saveFileDialog.fileUrl
+            }
 
             nav.close()
         }

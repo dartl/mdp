@@ -14,8 +14,8 @@ void HandlerSignals::menu(const int index, const QString url) {
         //std::cerr << convertUrl(url).toStdString();
         qDebug() << convertUrl(url);
         break;
-    case 4:
-        emit exit();
+    case 3:
+        qDebug() << convertUrl(url);
         break;
     default:
         break;
@@ -24,6 +24,9 @@ void HandlerSignals::menu(const int index, const QString url) {
 
 QString HandlerSignals::convertUrl(QString url)
 {
+    /*
+     * конвертирование url из QML в строку формата, принимаемого ofstream из std
+    */
     QStringList tmp;
     QString realPath;
 
