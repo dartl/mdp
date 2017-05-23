@@ -7,11 +7,11 @@ HandlerSignals::HandlerSignals(QObject *parent) : QObject(parent)
 
 void HandlerSignals::menu(const int index) {
     switch (index) {
+    case 0:
+        break;
     case 1:
-//        algorithm->addLeftNodeGraph(2);
-//        //algorithm->addLeftNodeGraph("Менеджер");
-//        algorithm->addRightPartGraph();
-        algorithm->clearGraph();
+        algorithm->addLeftNodeGraph(2);
+        algorithm->addRightPartGraph();
         break;
     case 4:
         emit exit();

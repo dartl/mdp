@@ -25,12 +25,13 @@ Pane {
     //signals for deleteMode
     signal activeDeleteMode
     signal inActiveDeleteMode
+    signal updateTextDeleteNodeButton
 
     //slots for update Graph
     function onUpdateLeftNodesGraph(title_job) {
         addArea.existNodeMode = data_graph.addLeftNodeGraph(db_model_jobs.getId(db_model_jobs.getIndexByTitle(title_job)))
         graph.update()
-        console.log("existNodeGraph " + addArea.existNodeMode)
+        //console.log("existNodeMode " + addArea.existNodeMode)
     }
 
     /*  Проверка на повторяемость специльностей.
@@ -62,6 +63,26 @@ Pane {
         //else info
     }
 
+    function deleteElementNodeList(id,check) {
+        var indexRemove = -1;
+        for (var i = 0; i < deleteNodesList.length; ++i) {
+
+            if (deleteNodesList[i].id === id &&
+                    deleteNodesList[i].check === check) {
+                indexRemove = i;
+                break;
+            }
+        }
+        if (indexRemove !== -1) {
+            deleteNodesList.splice(indexRemove,1);
+            return true;
+        }
+        else
+            return false;
+
+    }
+
+
     property var deleteNodesList: []
 
     Graph {
@@ -90,7 +111,6 @@ Pane {
                         visible: visibleGraphMode && checkSameNode(modelData.idJob) ? true : false
                         anchors.left: parent.left
                         anchors.leftMargin: 50
-
                         width: mainWindow.width / 3
                         height: mainWindow.height / 6
                         border {
@@ -124,22 +144,28 @@ Pane {
                                 if (deleteMode) {
                                     if (!checkDeletedNodeLeft.visible) {
                                         checkDeletedNodeLeft.visible = true
-                                        checkDeletedNodeRight.visible = true
+
+                                        deleteNodesList.push({id: modelData.idJob, check: true})
+
+
+                                        if (!checkDeletedNodeRight.visible) {
+                                            checkDeletedNodeRight.visible = true
+                                            deleteNodesList.push({id: modelData.idWorker, check: false})
+                                        }
+//                                        updateTextDeleteNodeButton.connect(mainWindow.onUpdateTextDeleteNodeButton)
+//                                        updateTextDeleteNodeButton()
+//                                        updateTextDeleteNodeButton.disconnect(mainWindow.onUpdateTextDeleteNodeButton)
                                     }
                                     else {
                                         checkDeletedNodeLeft.visible = false
                                         checkDeletedNodeRight.visible = false
 
-//                                        deleteNodesList.forEach(function(item,i,deleteNodesList){
-//                                            if (item.name === "job" && item.value === modelData.idJob) {
-//                                                console.log(item)
-//                                            }
-//                                        })
+                                        deleteElementNodeList(modelData.idJob,true)
+                                        deleteElementNodeList(modelData.idWorker,false)
 
-//                                        inActiveDeleteMode = false
-//                                        if (deleteNodesList.length === 0) {
-//                                            inActiveDeleteMode()
-//                                        }
+                                        if (deleteNodesList.length === 0) {
+                                            inActiveDeleteMode()
+                                        }
                                     }
                                 }
                             }
@@ -150,8 +176,11 @@ Pane {
                                     checkDeletedNodeLeft.visible = true
                                     checkDeletedNodeRight.visible = true
 
-                                    deleteNodesList.push({name: "job", value: modelData.idJob})
-                                    deleteNodesList.push({name: "worker", value: modelData.idWorker})
+                                    deleteNodesList.push({id: modelData.idJob, check: true})
+
+                                    if (modelData.idWorker !== -1) {
+                                        deleteNodesList.push({id: modelData.idWorker, check: false})
+                                    }
                                 }
                             }
                         }
@@ -162,7 +191,6 @@ Pane {
                         visible: visibleGraphMode && (modelData.idWorker !== -1) ? true : false
                         anchors.right: parent.right
                         anchors.rightMargin: 50
-
                         width: mainWindow.width / 3
                         height: mainWindow.height / 6
                         border {
@@ -196,9 +224,17 @@ Pane {
                                 if (deleteMode) {
                                     if (!checkDeletedNodeRight.visible) {
                                         checkDeletedNodeRight.visible = true
+
+                                        deleteNodesList.push({id: modelData.idWorker, check: false})
                                     }
                                     else {
                                         checkDeletedNodeRight.visible = false
+
+                                        deleteElementNodeList(modelData.idWorker,false)
+
+                                        if (deleteNodesList.length === 0) {
+                                            inActiveDeleteMode()
+                                        }
                                     }
                                 }
                                 else {
@@ -211,10 +247,19 @@ Pane {
                                 if (!deleteMode) {
                                     activeDeleteMode()
                                     checkDeletedNodeRight.visible = true
-                                    deleteNodesList.push({name: "worker", value: modelData.idWorker})
+                                    deleteNodesList.push({id: modelData.idWorker, check: false})
                                 }
                             }
                         }
+                    }
+
+                    Edge {
+                        id: edge_graph
+                        visible: nodeRight.visible
+
+                        object_1: nodeLeft
+                        object_2: nodeRight
+                        colorEdge: Material.color(Material.BlueGrey)
                     }
                 }
             }
@@ -231,13 +276,10 @@ Pane {
         Label {
             id: labelAdd
             anchors.centerIn: parent
-            text: "Нажмите для добавления"
+            text: qsTr("Click to Add") + qmlTranslator.emptyString
             font.pixelSize: 30
             color: Material.color(Material.Grey)
         }
-
-
-
 //        MouseArea {
 //            id: mouse
 //            anchors.fill: parent
@@ -250,109 +292,6 @@ Pane {
 ////                    graphView.inActiveDeleteMode();
 //            }
 //        }
-
-
     }
-
-
-//    Popup {
-//        id: addJobs
-//        x: (mainWindow.width - width) / 2
-//        y: mainWindow.height / 6
-//        width: Math.min(mainWindow.width, mainWindow.height) / 3 * 1.5
-//        height: columnJobs.implicitHeight + topPadding + bottomPadding
-//        modal: true
-//        focus: true
-
-//        contentItem: ColumnLayout {
-//            id: columnJobs
-//            Button {
-//                id: addButton
-//                text: "Добавить специальность"
-//                onClicked: {
-//                    addJobs.close()
-//                }
-
-//                Material.foreground: Material.primary
-//                Material.background: "transparent"
-//                Material.elevation: 0
-
-//                Layout.preferredWidth: 0
-//                Layout.fillWidth: true
-//            }
-
-//            Button {
-//                id: deleteAllButton
-//                text: "Удалить модель"
-//                onClicked: {
-//                    addJobs.close()
-//                    dialogDeleteModel.open()
-//                }
-
-//                Material.foreground: Material.Red
-//                Material.background: "transparent"
-//                Material.elevation: 0
-
-//                Layout.preferredWidth: 0
-//                Layout.fillWidth: true
-//            }
-//        }
-//    }
-
-
-//    Popup {
-//        id: dialogDeleteModel
-//        x: (mainWindow.width - width) / 2
-//        y: mainWindow.height / 6
-//        width: Math.min(mainWindow.width, mainWindow.height) / 3 * 2
-//        height: columnInfo.implicitHeight + topPadding + bottomPadding
-//        modal: true
-//        focus: true
-
-//        contentItem: ColumnLayout {
-//            id: columnInfo
-//            spacing: 20
-//            Label {
-//                text: "Удалить столько то моделей?"
-//                font.pixelSize: 20
-//                anchors.top: parent.top
-//                anchors.topMargin: 10
-//                anchors.horizontalCenter: parent.horizontalCenter
-
-//                color: Material.color(Material.Red)
-//            }
-
-//            RowLayout {
-//                spacing: 10
-
-//                Button {
-//                    id: okButton
-//                    text: "Да"
-//                    onClicked: {
-//                        dialogDeleteModel.close()
-//                    }
-
-//                    Material.foreground: Material.Red
-//                    Material.background: "transparent"
-//                    Material.elevation: 0
-
-//                    Layout.fillWidth: true
-//                }
-
-//                Button {
-//                    id: cancelButton
-//                    text: "Отмена"
-//                    onClicked: {
-//                        dialogDeleteModel.close()
-//                    }
-
-//                    Material.background: "transparent"
-//                    Material.elevation: 0
-
-//                    Layout.fillWidth: true
-//                }
-//            }
-//        }
-//    }
 }
 

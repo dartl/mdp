@@ -4,6 +4,9 @@
 #include <QObject>
 #include <QVariant>
 #include <QDebug>
+#include <QSqlDatabase>
+#include <QSqlError>
+#include <QGuiApplication>
 
 #include "algorithm.h"
 

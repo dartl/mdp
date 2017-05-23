@@ -32,10 +32,10 @@ void ListModelGraph::update()
     this->m_graph = ListModelGraph::m_algorithm->getGraphConvert();
 
     //console output
-    qDebug() << "GetGraphConvert:";
-    foreach (ModelGraph* it, *m_graph) {
-        qDebug() << it->idJob() << " " << it->idWorker();
-    }
+//    qDebug() << "GETGraphConvert:";
+//    foreach (ModelGraph* it, *m_graph) {
+//        qDebug() << it->idJob() << " " << it->idWorker();
+//    }
 
     emit dataChanged();
 }

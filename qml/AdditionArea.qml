@@ -47,7 +47,6 @@ Pane {
         width: Math.min(pointer_mainWindow.width, pointer_mainWindow.height) / 3 * 2
         height: pointer_mainWindow.height
         dragMargin: 0
-
         Pane {
             id: paneSearch
             focus: true
@@ -56,7 +55,7 @@ Pane {
                 id: liveSearch
                 focus: true
                 width: showJobs.width - Math.min(imgSearch.width,imgSearch.height) - 20
-                placeholderText: "Введите специальность"
+                placeholderText: qsTr("Enter the Specialty") + qmlTranslator.emptyString
                 onTextChanged: db_model_jobs_filter.setFilterFixedString(text)
             }
 
@@ -90,8 +89,6 @@ Pane {
                 text: title
                 font.pixelSize: 20
                 onClicked: {
-
-                    //bug#8 замена index на index из model_job
                     updateLeftNodesGraph.connect(graph.onUpdateLeftNodesGraph)
                     updateLeftNodesGraph(title)
 

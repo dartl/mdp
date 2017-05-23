@@ -8,10 +8,12 @@ ApplicationWindow {
     signal usedMenu(int index)
 
     //???????
-    signal getIndexListJobs(string title)
-    signal getIndexListWorkers(int index)
+//    signal getIndexListJobs(string title)
+//    signal getIndexListWorkers(int index)
 
-    signal updateRightNodesGraph;
+    signal updateRightNodesGraph
+
+    property var addArea_pointer: null
 
     visible: true
     id: mainWindow
@@ -20,7 +22,7 @@ ApplicationWindow {
     height: 600
     minimumWidth: 900
     minimumHeight: 500
-    title: "Staff Search"
+    title: qsTr("Staff Search") + qmlTranslator.emptyString
 
     Material.theme: Material.Light
     Material.accent: Material.BlueGrey
@@ -34,7 +36,7 @@ ApplicationWindow {
         id:timer
     }
 
-    //delay simulator for LoadIndicator.qml
+//    delay simulator for LoadIndicator.qml
     function delay(delayTime, cb) {
         timer.interval = delayTime;
         timer.repeat = false;
@@ -52,6 +54,9 @@ ApplicationWindow {
 //        }
 
         stackView.replace(addArea);
+
+        addArea_pointer = stackView.currentItem
+
         if (!addNode_button.visible)
             addNode_button.visible = true;
 
@@ -70,6 +75,10 @@ ApplicationWindow {
             stackView.currentItem.graph.deleteMode = true;
         }
 
+        label_delete.text += " (" + stackView.currentItem.graph.deleteNodesList.length + ")"
+        //console.log("DeleteNodesList in main.qml " + addArea.graph.deleteNodesList.length)
+        //console.log("addArea in main.qml " + addArea_pointer)
+        //console.log("stackView in main.qml " + stackView.currentItem)
         console.log("ActiveDeleteMode")
     }
 
@@ -82,6 +91,17 @@ ApplicationWindow {
         }
 
         console.log("InActiveDeleteMode")
+
+    }
+
+    //update text to deleteNode_button
+    function onUpdateTextDeleteNodeButton() {
+        label_delete.text = qsTr("Delete") + " (" + addArea_pointer.graph.deleteNodesList.length + ")"
+    }
+
+    Settings {
+        id: settings
+        property string language: "Русский"
     }
 
     header: ToolBar {
@@ -101,7 +121,10 @@ ApplicationWindow {
                     verticalAlignment: Image.AlignVCenter
                     source: "qrc:/images/ic-menu.png"
                 }
-                onClicked: nav.open()
+                onClicked: {
+                    nav.open()
+                    qmlTranslator.emptyString
+                }
             }
 
             ToolButton {
@@ -116,17 +139,18 @@ ApplicationWindow {
                 }
                 onClicked: {
                             if (stackView.currentItem.graph.searchRightNodesMode) {
-//                                stackView.push(loadIndicator)
-//                                delay(800, function() {
-//                                    stackView.pop()
+                                stackView.push(loadIndicator)
+                                delay(800, function() {
+                                    stackView.pop()
 
-//                                    updateRightNodesGraph.connect(stackView.currentItem.graph.onUpdateRightNodesGraph)
-//                                    updateRightNodesGraph()
-//                                    updateRightNodesGraph.disconnect(stackView.currentItem.graph.onUpdateRightNodesGraph)
-//                               })
-                                updateRightNodesGraph.connect(stackView.currentItem.graph.onUpdateRightNodesGraph)
-                                updateRightNodesGraph()
-                                updateRightNodesGraph.disconnect(stackView.currentItem.graph.onUpdateRightNodesGraph)
+                                    updateRightNodesGraph.connect(stackView.currentItem.graph.onUpdateRightNodesGraph)
+                                    updateRightNodesGraph()
+                                    updateRightNodesGraph.disconnect(stackView.currentItem.graph.onUpdateRightNodesGraph)
+                               })
+
+//                                updateRightNodesGraph.connect(stackView.currentItem.graph.onUpdateRightNodesGraph)
+//                                updateRightNodesGraph()
+//                                updateRightNodesGraph.disconnect(stackView.currentItem.graph.onUpdateRightNodesGraph)
                             }
 
 
@@ -170,6 +194,7 @@ ApplicationWindow {
                 }
                 onClicked: {
                     optionsDelete.open()
+                    onUpdateTextDeleteNodeButton()
                 }
 
                 Menu {
@@ -191,11 +216,18 @@ ApplicationWindow {
                             }
 
                             Label {
-                                text: "Удалить" + " (5)"
+                                id: label_delete
+                                text: qsTr("Delete") + qmlTranslator.emptyString
                                 color: Material.color(Material.Red)
                                 font.pixelSize: 20
                                 Layout.fillWidth: true
                             }
+                        }
+
+                        onTriggered: {
+                            addArea_pointer.graph.deleteNodesList.forEach(function(item,i,deleteNodesList){
+                                console.log("DeleteNodeList: " + item.id + " " + item.check)
+                            })
                         }
                     }
                 }
@@ -218,11 +250,11 @@ ApplicationWindow {
                     transformOrigin: Menu.TopRight
 
                     MenuItem {
-                        text: "Настройки"
+                        text: qsTr("Settings") + qmlTranslator.emptyString
                         onTriggered: settingsPopup.open()
                     }
                     MenuItem {
-                        text: "О приложении"
+                        text: qsTr("About") + qmlTranslator.emptyString
                         onTriggered: {
                             aboutDialog.open()
                     }
@@ -279,6 +311,8 @@ ApplicationWindow {
                                 stackView.currentItem.graph.visibleGraphMode = false
                             }
                         }
+
+
                         break;
                     case 1:
                         if (ListView.currentIndex != index) {
@@ -299,13 +333,13 @@ ApplicationWindow {
                     nav.close()
                 }
             }
-
             model: ListModel {
-                ListElement {title: "Создать"; icon: "qrc:/images/icon-create-menu.png"}
-                ListElement {title: "Открыть"; icon: "qrc:/images/icon-open-menu.png"}
-                ListElement {title: "Сохранить"; icon: "qrc:/images/icon-save-menu.png"}
-                ListElement {title: "Сохранить как"; icon: "qrc:/images/icon-save-as.png"}
-                ListElement {title: "Выход"; icon: "qrc:/images/icon-exit-menu.png"}
+                id: listModel_menu
+                ListElement {title: qsTr("Create"); icon: "qrc:/images/icon-create-menu.png"}
+                ListElement {title: qsTr("Open"); icon: "qrc:/images/icon-open-menu.png"}
+                ListElement {title: qsTr("Save"); icon: "qrc:/images/icon-save-menu.png"}
+                ListElement {title: qsTr("Save as"); icon: "qrc:/images/icon-save-as.png"}
+                ListElement {title: qsTr("Exit"); icon: "qrc:/images/icon-exit-menu.png"}
             }
 
             ScrollIndicator.vertical: ScrollIndicator { }
@@ -335,7 +369,7 @@ ApplicationWindow {
                 wrapMode: Label.Wrap
                 font.pixelSize: 30
                 color: Material.color(Material.Grey)
-                text: "Создайте новую модель или откройте существующую"
+                text: qsTr("Create a new model or open an existing one") + qmlTranslator.emptyString
             }
         }
     }
@@ -369,7 +403,7 @@ ApplicationWindow {
             spacing: 20
 
             Label {
-                text: "Настройки"
+                text: qsTr("Settings") + qmlTranslator.emptyString
                 font.bold: true
             }
 
@@ -377,17 +411,19 @@ ApplicationWindow {
                 spacing: 10
 
                 Label {
-                    text: "Язык:"
+                    text: qsTr("Language") + qmlTranslator.emptyString + ":"
                 }
 
                 ComboBox {
                     id: styleBox
-                    property int styleIndex: -1
+                    property int languageIndex: -1
                     model: ["Русский", "English"]
                     Component.onCompleted: {
-                        if (styleIndex !== -1)
-                            currentIndex = styleIndex
+                        languageIndex = find(settings.language, Qt.MatchFixedString)
+                        if (languageIndex !== -1)
+                            currentIndex = languageIndex
                     }
+
                     Layout.fillWidth: true
                 }
             }
@@ -398,10 +434,11 @@ ApplicationWindow {
                 Button {
                     id: okButton
                     text: "Ok"
-//                    onClicked: {
-//                        settings.style = styleBox.displayText
-//                        settingsPopup.close()
-//                    }
+                    onClicked: {
+                        settings.language = styleBox.displayText
+                        qmlTranslator.setTranslation(settings.language)
+                        settingsPopup.close()
+                    }
 
                     Material.foreground: Material.primary
                     Material.background: "transparent"
@@ -413,9 +450,9 @@ ApplicationWindow {
 
                 Button {
                     id: cancelButton
-                    text: "Отмена"
+                    text: qsTr("Cancel") + qmlTranslator.emptyString
                     onClicked: {
-                        styleBox.currentIndex = styleBox.styleIndex
+                        styleBox.currentIndex = styleBox.languageIndex
                      settingsPopup.close()
                     }
 
@@ -443,20 +480,20 @@ ApplicationWindow {
             spacing: 20
 
             Label {
-                text: "О программе"
+                text: qsTr("About application") + qmlTranslator.emptyString
                 font.bold: true
             }
 
             Label {
                 width: aboutDialog.availableWidth
-                text: "Поиск работников"
+                text: qsTr("Staff Search") + qmlTranslator.emptyString
                 wrapMode: Label.Wrap
                 font.pixelSize: 12
             }
 
             Label {
                 width: aboutDialog.availableWidth
-                text: "Приложение помогает в поиске специалистов"
+                text: qsTr("The application helps in finding staff") + qmlTranslator.emptyString
 
                 wrapMode: Label.Wrap
                 font.pixelSize: 12
@@ -477,7 +514,7 @@ ApplicationWindow {
             id: columnInfo
             spacing: 20
             Label {
-                text: "Сохранить текущую модель?"
+                text: qsTr("Save the current model") + qmlTranslator.emptyString + "?"
                 font.pixelSize: 20
                 anchors.top: parent.top
                 anchors.topMargin: 10
@@ -491,7 +528,7 @@ ApplicationWindow {
 
                 Button {
                     id: okButton2
-                    text: "Да"
+                    text: qsTr("Yes") + qmlTranslator.emptyString
                     onClicked: {
                         dialogEditingMode.close()
                         //open SAVE_WINDOW_IN_WINDOWS OR SIGNAL
@@ -506,7 +543,7 @@ ApplicationWindow {
 
                 Button {
                     id: cancelButton2
-                    text: "Отмена"
+                    text: qsTr("Cancel") + qmlTranslator.emptyString
                     onClicked: {
                         dialogEditingMode.close()
                     }
@@ -519,4 +556,27 @@ ApplicationWindow {
             }
         }
     }
+
+    //initial language
+    Component.onCompleted: {
+        qmlTranslator.setTranslation(settings.language)
+    }
+
+    //kludge (horrible piece of shit)/////////////////
+    function updateTitlesMenu() {
+        listModel_menu.get(0).title = qsTr("Create")
+        listModel_menu.get(1).title = qsTr("Open")
+        listModel_menu.get(2).title = qsTr("Save")
+        listModel_menu.get(3).title = qsTr("Save as")
+        listModel_menu.get(4).title = qsTr("Exit")
+    }
+
+    Connections {
+        target: qmlTranslator
+        onLanguageChanged: {
+            updateTitlesMenu()
+        }
+    }
+    ////////////////////////////////////////////////
+
 }
