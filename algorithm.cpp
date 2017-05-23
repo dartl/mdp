@@ -115,3 +115,13 @@ void Algorithm::clearGraph()
     PrintVertixs();
     PrintPairs();
 }
+
+void Algorithm::saveModel(std::string uri)
+{
+    this->graph->Serialize(uri);
+}
+
+void Algorithm::openModel(std::string uri)
+{
+    this->graph->Deserialize(uri);
+}

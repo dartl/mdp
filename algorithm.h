@@ -23,6 +23,8 @@ class Algorithm : public QObject
     ListModelWorkers* workers;
     ListModelRelationsSS* relations;
 
+    QMap<Node<int>, QList<Node<int> > > removeData;
+
 
 public:
     explicit Algorithm(ListModelJobs* jobs, ListModelWorkers* workers,
@@ -45,6 +47,9 @@ public slots:
     void addRightPartGraph();
     void removeNode(int id, bool check);
     void clearGraph();
+
+    void saveModel(std::__cxx11::string uri);
+    void openModel(std::__cxx11::string uri);
 };
 
 #endif // ALGORITHM_H

@@ -24,10 +24,12 @@ signals:
     void exit();
 
 public slots:
-    void menu(const int index);
+    void menu(const int index, const QString url);
 
 private:
     Algorithm* algorithm;
+
+    QString convertUrl(QString url);
 };
 
 #endif // HANDLERSIGNALS_H

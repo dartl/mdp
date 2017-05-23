@@ -88,8 +88,8 @@ int main(int argc, char *argv[])
     handlerSignals->setAlgorithm(algorithm);
 
     //connect signals
-    QObject::connect(mainWindow,SIGNAL(usedMenu(int)),
-                     handlerSignals,SLOT(menu(int)));
+    QObject::connect(mainWindow,SIGNAL(usedMenu(int,QString)),
+                     handlerSignals,SLOT(menu(int, QString)));
 
     QObject::connect(handlerSignals,SIGNAL(exit()),
                      qApp,SLOT(quit()));

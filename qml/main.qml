@@ -3,13 +3,10 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.0
 import QtQuick.Controls.Material 2.0
 import Qt.labs.settings 1.0
+import QtQuick.Dialogs 1.2
 
 ApplicationWindow {
-    signal usedMenu(int index)
-
-    //???????
-//    signal getIndexListJobs(string title)
-//    signal getIndexListWorkers(int index)
+    signal usedMenu(int index, string url)
 
     signal updateRightNodesGraph
 
@@ -28,8 +25,9 @@ ApplicationWindow {
     Material.accent: Material.BlueGrey
     Material.primary: Material.BlueGrey
 
-    //flag to open file
-    property bool isOpenFile : false
+    //flag and path to open file
+    property bool isOpenExistingFile : false
+    property string pathExistingFile: ""
 
     //timer for delay simulator
     Timer {
@@ -46,16 +44,24 @@ ApplicationWindow {
 
     //add slots for Graph.qml
     function onActiveAddArea() {
-//        if (stackView.depth !== 0) {
-//            if (stackView.currentItem.graph.editingMode) {
-//                dialogEditingMode.open()
-//                stackView.currentItem.graph.editingMode = false;
-//            }
-//        }
 
-        stackView.replace(addArea);
+        //очищение текущей сессии
+        if (stackView.currentItem === addArea_pointer) {
 
-        addArea_pointer = stackView.currentItem
+            addArea_pointer.graph.editingMode = false
+            addArea_pointer.graph.visibleGraphMode = false
+            addArea_pointer.graph.searchRightNodesMode = false
+
+            data_graph.clearGraph()
+
+            addArea_pointer.graph.thisGraph.update()
+
+        }
+        else {
+            stackView.replace(addArea);
+
+            addArea_pointer = stackView.currentItem
+        }
 
         if (!addNode_button.visible)
             addNode_button.visible = true;
@@ -63,8 +69,8 @@ ApplicationWindow {
         if (!search_button.visible)
             search_button.visible = true;
 
-        stackView.currentItem.graph.activeDeleteMode.connect(onActiveDeleteMode);
-        stackView.currentItem.graph.inActiveDeleteMode.connect(onInActiveDeleteMode);
+         addArea_pointer.graph.activeDeleteMode.connect(onActiveDeleteMode);
+         addArea_pointer.graph.inActiveDeleteMode.connect(onInActiveDeleteMode);
     }
 
     //mode in Graph.qml
@@ -75,23 +81,16 @@ ApplicationWindow {
             stackView.currentItem.graph.deleteMode = true;
         }
 
-        label_delete.text += " (" + stackView.currentItem.graph.deleteNodesList.length + ")"
-        //console.log("DeleteNodesList in main.qml " + addArea.graph.deleteNodesList.length)
-        //console.log("addArea in main.qml " + addArea_pointer)
-        //console.log("stackView in main.qml " + stackView.currentItem)
-        console.log("ActiveDeleteMode")
+        label_delete.text += " (" + addArea_pointer.graph.deleteNodesList.length + ")"
     }
 
     //mode in Graph.qml
     function onInActiveDeleteMode() {
-        if (stackView.currentItem.graph.deleteMode) {
+        if (addArea_pointer.graph.deleteMode) {
             deleteNode_button.visible = false;
             addNode_button.anchors.right = additional_menu.left;
-            stackView.currentItem.graph.deleteMode = false;
+            addArea_pointer.graph.deleteMode = false;
         }
-
-        console.log("InActiveDeleteMode")
-
     }
 
     //update text to deleteNode_button
@@ -160,7 +159,7 @@ ApplicationWindow {
                     parent: search_button
                     leftMargin: mainWindow.width / 2 - width / 2
                     topMargin: mainWindow.height - height * 2
-                    visible:  search_button.pressed && !stackView.currentItem.graph.searchRightNodesMode
+                    visible:  search_button.pressed && !addArea_pointer.graph.searchRightNodesMode
                     text: "Нечего искать!"
                     timeout: 5000
                 }
@@ -177,7 +176,7 @@ ApplicationWindow {
                     source: "qrc:/images/ic-add-node.png"
                 }
                 onClicked: {
-                    stackView.currentItem.drawer_showJobs.open()
+                    addArea_pointer.drawer_showJobs.open()
                     //stackView.currentItem.graph.editingMode = true
                 }
             }
@@ -226,8 +225,20 @@ ApplicationWindow {
 
                         onTriggered: {
                             addArea_pointer.graph.deleteNodesList.forEach(function(item,i,deleteNodesList){
-                                console.log("DeleteNodeList: " + item.id + " " + item.check)
+                                data_graph.removeNode(item.id,item.check)
+
+                                if (!addArea_pointer.graph.searchRightNodesMode) {
+                                    if (item.check === false) {
+                                        addArea_pointer.graph.searchRightNodesMode = true
+                                    }
+                                }
                             })
+                            addArea_pointer.graph.deleteNodesList.splice(0,
+                                                                         addArea_pointer.graph.deleteNodesList.length)
+
+                            addArea_pointer.graph.thisGraph.update()
+
+                            onInActiveDeleteMode()
                         }
                     }
                 }
@@ -304,12 +315,13 @@ ApplicationWindow {
                     case 0:
                         if (ListView.currentIndex != index) {
                             ListView.currentIndex = index
-                            usedMenu(index)
                             onActiveAddArea()
 
                             if (stackView.currentItem.graph.visibleGraphMode) {
                                 stackView.currentItem.graph.visibleGraphMode = false
                             }
+
+                            nav.close()
                         }
 
 
@@ -317,20 +329,33 @@ ApplicationWindow {
                     case 1:
                         if (ListView.currentIndex != index) {
                             ListView.currentIndex = index
-                            usedMenu(index)
-                            onActiveAddArea()
-                            stackView.currentItem.graph.visibleGraphMode = true
-                            stackView.currentItem.graph.thisGraph.update()
 
-                            isOpenFile = true
+                            fileDialog.open()
                         }
                         break;
-                     case 4:
-                         usedMenu(index)
+                    case 2:
+                        if (ListView.currentIndex != index) {
+                            ListView.currentIndex = index
+
+                            if (!isOpenExistingFile) {
+                                saveFileDialog.open()
+                            }
+                            else {
+                                usedMenu(3,pathExistingFile)
+                            }
+                        }
+                        break;
+                    case 3:
+                        if (ListView.currentIndex != index) {
+                            ListView.currentIndex = index
+
+                            saveFileDialog.open()
+                        }
+                        break;
+                    case 4:
+                         Qt.quit()
                          break;
                     }
-                    //usedMenu(index)
-                    nav.close()
                 }
             }
             model: ListModel {
@@ -578,5 +603,52 @@ ApplicationWindow {
         }
     }
     ////////////////////////////////////////////////
+
+    FileDialog {
+        id: fileDialog
+        title: qsTr("Please choose a file") + qmlTranslator.emptyString
+        folder: shortcuts.desktop
+        nameFilters: ["Model files (*.mdp)", "All files (*)"]
+        onAccepted: {
+            usedMenu(1, fileDialog.fileUrl)
+            onActiveAddArea()
+
+            addArea_pointer.graph.visibleGraphMode = true
+            addArea_pointer.graph.thisGraph.update()
+
+            if (!isOpenExistingFile) {
+                isOpenExistingFile = true
+                pathExistingFile = fileDialog.fileUrl
+            }
+
+            nav.close()
+        }
+        onRejected: {
+            nav.close()
+        }
+    }
+
+    FileDialog {
+        id: saveFileDialog
+        title: qsTr("Save as") + qmlTranslator.emptyString
+        folder: shortcuts.desktop
+        selectExisting: false
+        selectMultiple: false
+        nameFilters: [ "Model files (*.mdp)", "All files (*)" ]
+        onAccepted: {
+            usedMenu(3,saveFileDialog.fileUrl)
+
+
+            if (!isOpenExistingFile) {
+                isOpenExistingFile = true
+                pathExistingFile = saveFileDialog.fileUrl
+            }
+
+            nav.close()
+        }
+        onRejected: {
+            nav.close()
+        }
+    }
 
 }
