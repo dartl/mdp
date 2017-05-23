@@ -68,26 +68,13 @@ void Algorithm::PrintPairs()
 
 bool Algorithm::addLeftNodeGraph(int id)
 {
-    Node<int>* temp = new Node<int>(id, true);
-    if (!graph->checkVertix(temp))
-    {
-        graph->addVertix(id, true);
-         PrintVertixs();
-         delete temp;
-         return true;
-    }
-    else
-    {
-        delete temp;
-        return false;
-    }
+    PrintVertixs();
+    return graph->addVertix(id, true);
 }
 
 void Algorithm::addRightPartGraph()
 {
-    //при уже существующем графе??????
     this->graph->removeAllFalse();
-
 
     for (BipartiteGraph<int>::IteratorVertixs i = (*graph).beginVertixs(); i != (*graph).endVertixs(); i++)
     {
@@ -110,6 +97,14 @@ void Algorithm::addRightPartGraph()
             graph->addPair(graph->getVertixNode((*i)->getData(), true), graph->getVertixNode(currWorkerMax, false));
         }
     }
+    PrintVertixs();
+    PrintPairs();
+}
+
+void Algorithm::removeNode(int id, bool check)
+{
+    Node<int>* temp = graph->getVertixNode(id, check);   // вершина из графа
+    graph->removeVertixNode(temp);
     PrintVertixs();
     PrintPairs();
 }

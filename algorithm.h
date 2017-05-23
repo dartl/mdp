@@ -43,6 +43,7 @@ signals:
 public slots:
     bool addLeftNodeGraph(int id);
     void addRightPartGraph();
+    void removeNode(int id, bool check);
     void clearGraph();
 };
 
