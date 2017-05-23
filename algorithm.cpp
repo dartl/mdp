@@ -103,7 +103,7 @@ void Algorithm::addRightPartGraph()
 
 void Algorithm::removeNode(int id, bool check)
 {
-    Node<int>* temp = graph->getVertixNode(id, check);
+    Node<int>* temp = graph->getVertixNode(id, check);   // вершина из графа
     graph->removeVertixNode(temp);
     PrintVertixs();
     PrintPairs();
