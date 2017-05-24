@@ -11,6 +11,9 @@
 #include <string>
 #include <QDebug>
 #include <QObject>
+#include <QDebug>
+#include <iostream>
+#include <iomanip>
 
 
 using namespace bpg;

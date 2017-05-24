@@ -1,5 +1,26 @@
 #include "algorithm.h"
 
+class print_only_vertix
+{
+    BipartiteGraph<int>* graph;
+public:
+    BipartiteGraph<int>* getGraph() const {
+        return graph;
+    }
+
+    print_only_vertix(BipartiteGraph<int>* g): graph(g) {}
+    friend std::ostream& operator<<(std::ostream& os, const print_only_vertix& t);
+};
+
+inline std::ostream& operator<<(std::ostream& os,const print_only_vertix& t)
+{
+    for (int i = 0; i < t.getGraph()->getSizeVertixs(); i++) {
+        os << "Vertix #" << i+1 << ": ";
+        os << t.getGraph()->getVertixNodeByNumber(i);
+        os << endl;
+    }
+    return os;
+}
 
 Algorithm::Algorithm(ListModelJobs *jobs, ListModelWorkers *workers,
                      ListModelRelationsSS *relations, QObject* parent): QObject(parent)
@@ -123,4 +144,5 @@ void Algorithm::saveModel(std::string uri)
 void Algorithm::openModel(std::string uri)
 {
     this->graph->Deserialize(uri);
+    std::cout << print_only_vertix(this->graph);
 }
