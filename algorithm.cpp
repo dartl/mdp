@@ -1,5 +1,26 @@
 #include "algorithm.h"
 
+class print_only_vertix
+{
+    BipartiteGraph<int>* graph;
+public:
+    BipartiteGraph<int>* getGraph() const {
+        return graph;
+    }
+
+    print_only_vertix(BipartiteGraph<int>* g): graph(g) {}
+    friend std::ostream& operator<<(std::ostream& os, const print_only_vertix& t);
+};
+
+inline std::ostream& operator<<(std::ostream& os,const print_only_vertix& t)
+{
+    for (int i = 0; i < t.getGraph()->getSizeVertixs(); i++) {
+        os << "Vertix #" << i+1 << ": ";
+        os << t.getGraph()->getVertixNodeByNumber(i);
+        os << endl;
+    }
+    return os;
+}
 
 Algorithm::Algorithm(ListModelJobs *jobs, ListModelWorkers *workers,
                      ListModelRelationsSS *relations, QObject* parent): QObject(parent)
@@ -46,7 +67,6 @@ QList<ModelGraph *> *Algorithm::getGraphConvert()
             tempList->append(tempModel);
         }
     }
-
     return tempList;
 }
 
@@ -86,11 +106,28 @@ void Algorithm::addRightPartGraph()
             {
                 if (relations->getIdSpecialty(j) == jobsId)
                 {
-                    if (relations->getLevelSpecialist(j) > currLevelMax)
+                    if (removeData.contains(jobsId))
+                    {
+                        QList<int> rights = removeData.values(jobsId);
+                        QListIterator<int> list_it(rights);
+                        while (list_it.hasNext())
+                        {
+                            int node = list_it.next();
+                            if (node == relations->getIdSpecialist(j))
+                                break;
+                            else if (relations->getLevelSpecialist(j) > currLevelMax)
+                            {
+                                currWorkerMax = relations->getIdSpecialist(j);
+                                currLevelMax = relations->getLevelSpecialist(j);
+                            }
+                        }
+                    }
+                    else if (relations->getLevelSpecialist(j) > currLevelMax)
                     {
                         currWorkerMax = relations->getIdSpecialist(j);
                         currLevelMax = relations->getLevelSpecialist(j);
                     }
+
                 }
             }
             graph->addVertix(currWorkerMax, false);
@@ -103,7 +140,7 @@ void Algorithm::addRightPartGraph()
 
 void Algorithm::removeNode(int id, bool check)
 {
-    Node<int>* temp = graph->getVertixNode(id, check);
+    Node<int>* temp = graph->getVertixNode(id, check);   // вершина из графа
     if (!check)
     {
         for (BipartiteGraph<int>::IteratorPairs p = (*graph).beginPairs();p != (*graph).endPairs(); ++p)
@@ -113,27 +150,9 @@ void Algorithm::removeNode(int id, bool check)
                 int left = (*p)->getFisrt()->getData();
 
                 if (!removeData.contains(left))
-                {
-                    QList<int> removeList;
-                    removeData.insert(left, removeList);
-                }
-                removeData[left].append(id);;
+                    removeData.insert(left, id);
                 break;
             }
-        }
-    }
-
-    QMapIterator<int, QList<int> > map_it(removeData);
-    while (map_it.hasNext())
-    {
-        int left = map_it.next().key();
-        QList<int> rights = map_it.next().value();
-        qDebug() << "\nLeft: " << left << ", rights: ";
-        QListIterator<int> list_it(rights);
-        while (list_it.hasNext())
-        {
-            int node = list_it.next();
-            qDebug() << node << " ";
         }
     }
     graph->removeVertixNode(temp);
@@ -145,8 +164,8 @@ void Algorithm::clearGraph()
 {
     this->graph->clearGraph();
     removeData.clear();
-    PrintVertixs();
-    PrintPairs();
+//    PrintVertixs();
+//    PrintPairs();
 }
 
 void Algorithm::saveModel(std::string uri)
@@ -157,4 +176,5 @@ void Algorithm::saveModel(std::string uri)
 void Algorithm::openModel(std::string uri)
 {
     this->graph->Deserialize(uri);
+    std::cout << print_only_vertix(this->graph);
 }

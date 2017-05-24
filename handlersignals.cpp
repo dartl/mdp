@@ -12,13 +12,13 @@ void HandlerSignals::menu(const int index, const QString url) {
         break;
     case 1:
         algorithm->openModel(convertUrl(url).toStdString());
-        std::cerr << convertUrl(url).toStdString();
-//        qDebug() << convertUrl(url);
+        //std::cerr << convertUrl(url).toStdString();
+        //qDebug() << convertUrl(url);
         break;
     case 3:
         algorithm->saveModel(convertUrl(url).toStdString());
-        std::cerr << convertUrl(url).toStdString();
-//        qDebug() << convertUrl(url);
+        //std::cerr << convertUrl(url).toStdString();
+        //qDebug() << convertUrl(url);
         break;
     default:
         break;
@@ -54,3 +54,4 @@ Algorithm *HandlerSignals::getAlgorithm() const
 {
     return algorithm;
 }
+

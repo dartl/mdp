@@ -11,6 +11,9 @@
 #include <string>
 #include <QDebug>
 #include <QObject>
+#include <QDebug>
+#include <iostream>
+#include <iomanip>
 
 
 using namespace bpg;
@@ -23,10 +26,7 @@ class Algorithm : public QObject
     ListModelWorkers* workers;
     ListModelRelationsSS* relations;
 
-
-
-    QMap<int, QList<int> > removeData;
-
+    QMultiMap<int, int> removeData;  // удаляемые данные, ключ - специальности, значения - работники
 
 
 public:

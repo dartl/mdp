@@ -280,18 +280,6 @@ Pane {
             font.pixelSize: 30
             color: Material.color(Material.Grey)
         }
-//        MouseArea {
-//            id: mouse
-//            anchors.fill: parent
-//            onClicked: {
-//                editingMode = true
-//                //addJobs.open()
-////                if (!deleteMode)
-////                    graphView.activeDeleteMode();
-////                else
-////                    graphView.inActiveDeleteMode();
-//            }
-//        }
     }
 }
 

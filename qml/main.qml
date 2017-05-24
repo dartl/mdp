@@ -44,23 +44,21 @@ ApplicationWindow {
 
     //add slots for Graph.qml
     function onActiveAddArea() {
+        stackView.replace(addArea);
 
+        addArea_pointer = stackView.currentItem
         //очищение текущей сессии
         if (stackView.currentItem === addArea_pointer) {
 
             addArea_pointer.graph.editingMode = false
             addArea_pointer.graph.visibleGraphMode = false
             addArea_pointer.graph.searchRightNodesMode = false
+            addArea_pointer.existNodeMode = false
 
             data_graph.clearGraph()
 
             addArea_pointer.graph.thisGraph.update()
 
-        }
-        else {
-            stackView.replace(addArea);
-
-            addArea_pointer = stackView.currentItem
         }
 
         if (!addNode_button.visible)
@@ -239,6 +237,8 @@ ApplicationWindow {
                             addArea_pointer.graph.thisGraph.update()
 
                             onInActiveDeleteMode()
+
+                            addArea_pointer.graph.editingMode = true
                         }
                     }
                 }
@@ -315,13 +315,29 @@ ApplicationWindow {
                     case 0:
                         if (ListView.currentIndex != index) {
                             ListView.currentIndex = index
-                            onActiveAddArea()
+                            if (addArea_pointer !== null) {
+                                if (addArea_pointer.graph.editingMode) {
+                                    dialogEditingMode.open()
+                                }
+                                else {
+                                    onActiveAddArea()
 
-                            if (stackView.currentItem.graph.visibleGraphMode) {
-                                stackView.currentItem.graph.visibleGraphMode = false
+                                    if (addArea_pointer.graph.visibleGraphMode) {
+                                        addArea_pointer.graph.visibleGraphMode = false
+                                    }
+
+                                    nav.close()
+                                }
                             }
+                            else {
+                                    onActiveAddArea()
 
-                            nav.close()
+                                    if (addArea_pointer.graph.visibleGraphMode) {
+                                        addArea_pointer.graph.visibleGraphMode = false
+                                    }
+
+                                    nav.close()
+                                }
                         }
 
 
@@ -330,7 +346,16 @@ ApplicationWindow {
                         if (ListView.currentIndex != index) {
                             ListView.currentIndex = index
 
-                            fileDialog.open()
+                            if (addArea_pointer !== null) {
+                                if (addArea_pointer.graph.editingMode) {
+                                    dialogEditingMode.open()
+                                }
+                                else {
+                                    openFileDialog.open()
+                                }
+                            }
+                            else
+                                openFileDialog.open()
                         }
                         break;
                     case 2:
@@ -338,18 +363,26 @@ ApplicationWindow {
                             ListView.currentIndex = index
 
                             if (!isOpenExistingFile) {
-                                saveFileDialog.open()
+                                if (addArea_pointer !== null && addArea_pointer.graph.visibleGraphMode)
+                                    saveFileDialog.open()
                             }
                             else {
                                 usedMenu(3,pathExistingFile)
+
+                                if (addArea_pointer.graph.editingMode) {
+                                    addArea_pointer.graph.editingMode = false
+                                }
+
+                                nav.close()
                             }
+
                         }
                         break;
                     case 3:
                         if (ListView.currentIndex != index) {
                             ListView.currentIndex = index
-
-                            saveFileDialog.open()
+                            if (addArea_pointer !== null && addArea_pointer.graph.visibleGraphMode)
+                                saveFileDialog.open()
                         }
                         break;
                     case 4:
@@ -555,8 +588,17 @@ ApplicationWindow {
                     id: okButton2
                     text: qsTr("Yes") + qmlTranslator.emptyString
                     onClicked: {
+                        if (!isOpenExistingFile) {
+                            saveFileDialog.open()
+                        }
+                        else {
+                            usedMenu(3,pathExistingFile)
+                            nav.close()
+                        }
+
                         dialogEditingMode.close()
                         //open SAVE_WINDOW_IN_WINDOWS OR SIGNAL
+
                     }
 
                     Material.foreground: Material.Red
@@ -605,20 +647,21 @@ ApplicationWindow {
     ////////////////////////////////////////////////
 
     FileDialog {
-        id: fileDialog
+        id: openFileDialog
         title: qsTr("Please choose a file") + qmlTranslator.emptyString
         folder: shortcuts.desktop
-        nameFilters: ["Model files (*.mdp)", "All files (*)"]
+        nameFilters: ["Model files (*.mdp)"]
         onAccepted: {
-            usedMenu(1, fileDialog.fileUrl)
             onActiveAddArea()
+
+            usedMenu(1, openFileDialog.fileUrl)
 
             addArea_pointer.graph.visibleGraphMode = true
             addArea_pointer.graph.thisGraph.update()
 
             if (!isOpenExistingFile) {
                 isOpenExistingFile = true
-                pathExistingFile = fileDialog.fileUrl
+                pathExistingFile = openFileDialog.fileUrl
             }
 
             nav.close()
@@ -634,10 +677,14 @@ ApplicationWindow {
         folder: shortcuts.desktop
         selectExisting: false
         selectMultiple: false
-        nameFilters: [ "Model files (*.mdp)", "All files (*)" ]
+        nameFilters: [ "Model files (*.mdp)" ]
         onAccepted: {
             usedMenu(3,saveFileDialog.fileUrl)
 
+
+            if (addArea_pointer.graph.editingMode) {
+                addArea_pointer.graph.editingMode = false
+            }
 
             if (!isOpenExistingFile) {
                 isOpenExistingFile = true
@@ -650,5 +697,6 @@ ApplicationWindow {
             nav.close()
         }
     }
+
 
 }
