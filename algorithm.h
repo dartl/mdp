@@ -45,6 +45,9 @@ public slots:
     void addRightPartGraph();
     void removeNode(int id, bool check);
     void clearGraph();
+
+    void saveModel(std::__cxx11::string uri);
+    void openModel(std::__cxx11::string uri);
 };
 
 #endif // ALGORITHM_H
