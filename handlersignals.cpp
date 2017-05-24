@@ -12,11 +12,12 @@ void HandlerSignals::menu(const int index, const QString url) {
         break;
     case 1:
         algorithm->openModel(convertUrl(url).toStdString());
-        //std::cerr << convertUrl(url).toStdString();
-        //qDebug() << convertUrl(url);
+        std::cerr << convertUrl(url).toStdString();
+//        qDebug() << convertUrl(url);
         break;
     case 3:
         algorithm->saveModel(convertUrl(url).toStdString());
+        std::cerr << convertUrl(url).toStdString();
 //        qDebug() << convertUrl(url);
         break;
     default:
@@ -37,7 +38,7 @@ QString HandlerSignals::convertUrl(QString url)
     for(int i = 3; i < tmp.length() - 1; ++i)
     {
         realPath.append(tmp[i]);
-        realPath.append("/");
+        realPath.append("\\");
     }
     realPath.append(tmp[tmp.length() - 1]);
 

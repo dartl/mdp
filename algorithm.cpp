@@ -103,7 +103,39 @@ void Algorithm::addRightPartGraph()
 
 void Algorithm::removeNode(int id, bool check)
 {
-    Node<int>* temp = graph->getVertixNode(id, check);   // вершина из графа
+    Node<int>* temp = graph->getVertixNode(id, check);
+    if (!check)
+    {
+        for (BipartiteGraph<int>::IteratorPairs p = (*graph).beginPairs();p != (*graph).endPairs(); ++p)
+        {
+            if ((*p)->getSecond() == temp)
+            {
+                int left = (*p)->getFisrt()->getData();
+
+                if (!removeData.contains(left))
+                {
+                    QList<int> removeList;
+                    removeData.insert(left, removeList);
+                }
+                removeData[left].append(id);;
+                break;
+            }
+        }
+    }
+
+    QMapIterator<int, QList<int> > map_it(removeData);
+    while (map_it.hasNext())
+    {
+        int left = map_it.next().key();
+        QList<int> rights = map_it.next().value();
+        qDebug() << "\nLeft: " << left << ", rights: ";
+        QListIterator<int> list_it(rights);
+        while (list_it.hasNext())
+        {
+            int node = list_it.next();
+            qDebug() << node << " ";
+        }
+    }
     graph->removeVertixNode(temp);
     PrintVertixs();
     PrintPairs();
@@ -112,6 +144,7 @@ void Algorithm::removeNode(int id, bool check)
 void Algorithm::clearGraph()
 {
     this->graph->clearGraph();
+    removeData.clear();
     PrintVertixs();
     PrintPairs();
 }
