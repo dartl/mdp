@@ -201,7 +201,6 @@ namespace bpg {
     private:
         std::list<Node<Type>*> vertixs;  // список вершин графа
         std::list<PairNode<Type>*> pairs;    // список ребер графа
-        int sizeV, sizeP;
     public:
         BipartiteGraph() {}
         // размер списка вершин
