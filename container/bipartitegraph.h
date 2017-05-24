@@ -201,6 +201,7 @@ namespace bpg {
     private:
         std::list<Node<Type>*> vertixs;  // список вершин графа
         std::list<PairNode<Type>*> pairs;    // список ребер графа
+        int sizeV, sizeP;
     public:
         BipartiteGraph() {}
         // размер списка вершин
@@ -234,7 +235,16 @@ namespace bpg {
                 } else {
                     auto newNode = allocator.allocateVertix(n,c);
                     vertixs.push_back(newNode);
-                    return true;
+                    auto vertexPosBeforeAdd = find_if(vertixs.begin(), vertixs.end(), [n,c](Node<Type>* i)
+                    {
+                      return i->getData() == n && i->isCheck() == c;
+                    });
+                    if(vertexPosBeforeAdd != vertixs.end())
+                    {
+                        return true;
+                    } else {
+                        THROW_TYPE_OBJECT_EXISTS("Vertex not add");
+                    }
                 }
             } catch(Exception e) {
                 std::cerr << e.printE();
@@ -369,7 +379,7 @@ namespace bpg {
         std::vector<Node<Type>*> findAllNode(bool c) {
             std::vector<Node<Type>*> myVector;
             int i = 0;
-            for(; v != endVertixs(); v++){
+            for(IteratorVertixs v = beginVertixs(); v != endVertixs(); v++){
                 Node<Type>* node = *v;
                 if (c == node->isCheck()) {
                     myVector.insert(myVector.end(),node);
