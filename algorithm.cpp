@@ -46,7 +46,6 @@ QList<ModelGraph *> *Algorithm::getGraphConvert()
             tempList->append(tempModel);
         }
     }
-
     return tempList;
 }
 
@@ -112,8 +111,8 @@ void Algorithm::removeNode(int id, bool check)
 void Algorithm::clearGraph()
 {
     this->graph->clearGraph();
-    PrintVertixs();
-    PrintPairs();
+//    PrintVertixs();
+//    PrintPairs();
 }
 
 void Algorithm::saveModel(std::string uri)

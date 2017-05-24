@@ -44,7 +44,9 @@ ApplicationWindow {
 
     //add slots for Graph.qml
     function onActiveAddArea() {
+        stackView.replace(addArea);
 
+        addArea_pointer = stackView.currentItem
         //очищение текущей сессии
         if (stackView.currentItem === addArea_pointer) {
 
@@ -57,11 +59,6 @@ ApplicationWindow {
 
             addArea_pointer.graph.thisGraph.update()
 
-        }
-        else {
-            stackView.replace(addArea);
-
-            addArea_pointer = stackView.currentItem
         }
 
         if (!addNode_button.visible)
@@ -241,7 +238,7 @@ ApplicationWindow {
 
                             onInActiveDeleteMode()
 
-                            addArea_pointer.graph.thisGraph.editingMode = true
+                            addArea_pointer.graph.editingMode = true
                         }
                     }
                 }
@@ -371,6 +368,11 @@ ApplicationWindow {
                             }
                             else {
                                 usedMenu(3,pathExistingFile)
+
+                                if (addArea_pointer.graph.editingMode) {
+                                    addArea_pointer.graph.editingMode = false
+                                }
+
                                 nav.close()
                             }
 
@@ -650,8 +652,9 @@ ApplicationWindow {
         folder: shortcuts.desktop
         nameFilters: ["Model files (*.mdp)"]
         onAccepted: {
-            usedMenu(1, openFileDialog.fileUrl)
             onActiveAddArea()
+
+            usedMenu(1, openFileDialog.fileUrl)
 
             addArea_pointer.graph.visibleGraphMode = true
             addArea_pointer.graph.thisGraph.update()
@@ -678,6 +681,10 @@ ApplicationWindow {
         onAccepted: {
             usedMenu(3,saveFileDialog.fileUrl)
 
+
+            if (addArea_pointer.graph.editingMode) {
+                addArea_pointer.graph.editingMode = false
+            }
 
             if (!isOpenExistingFile) {
                 isOpenExistingFile = true
